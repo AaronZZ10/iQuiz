@@ -3,7 +3,7 @@ export default function LoadQuestions({ loadFromText, busy, fileRef , onFile}) {
     
             <div className="rounded-2xl border bg-white p-4 space-y-3">
               <div className="flex flex-wrap items-center gap-3">
-                <label>Upload your own questions in JSON</label>
+                <label>Import questions (JSON)</label>
                 <input
                   type="file"
                   ref={fileRef}

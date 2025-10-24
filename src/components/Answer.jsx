@@ -1,6 +1,6 @@
 export default function Answer({ current }) {
   return (
-    <div className="p-4 rounded-xl border bg-green-50">
+    <div className="p-4 rounded-xl border bg-gray-50 mt-4">
                   <div className="text-sm uppercase tracking-wide opacity-70">
                     Answer
                   </div>

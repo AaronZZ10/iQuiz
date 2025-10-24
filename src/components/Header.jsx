@@ -56,7 +56,7 @@ export default function Head({
               <li>Select your preferred mode: <strong>Quiz</strong>, <strong>Short Answer</strong>, or <strong>Flashcard</strong>.</li>
               <li>Use the <strong>Flag</strong> button to mark questions for later review.</li>
               <li>Download your generated questions in JSON using the <strong>Download</strong> button.</li>
-              <li>Navigate between questions with the <strong>Previous</strong> / <strong>Next</strong> buttons or jump bar.</li>
+              <li>Navigate between questions with the <strong>Previous</strong> / <strong>Next</strong> buttons, arrows on keyboard, or jump bar.</li>
             </ul>
             <button
               className="mt-5 px-4 py-2 rounded-lg border bg-white hover:bg-gray-100"
