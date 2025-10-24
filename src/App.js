@@ -136,19 +136,34 @@ export default function App() {
 
   const current = visible[idx % Math.max(1, visible.length)];
   useEffect(() => {
-  const qid = current?.id;
-  if (!qid) return;
-  const rec = savedChoices[qid];
-  if (rec) {
-    // restore selection and feedback for this question
-    setQuizState(s => ({ ...s, selectedChoice: rec.choice, isChoiceCorrect: rec.correct }));
-    setShow(!rec.correct); // if it was wrong, keep the answer visible
-  } else {
-    // clear selection for unseen questions
-    setQuizState(s => ({ ...s, selectedChoice: null, isChoiceCorrect: null }));
-    setShow(false);
-  }
-}, [current?.id]);
+    const qid = current?.id;
+    if (!qid) return;
+    const rec = savedChoices[qid];
+    if (rec) {
+      // restore MCQ and short-answer state if available
+      setQuizState(s => ({
+        ...s,
+        selectedChoice: rec.choice ?? null,
+        isChoiceCorrect: typeof rec.correct === "boolean" ? rec.correct : null,
+        shortAnswerCorrect: typeof rec.shortCorrect === "boolean" ? rec.shortCorrect : null,
+      }));
+      if (typeof rec.shortText === "string") {
+        setTyped(rec.shortText);
+      } else {
+        setTyped("");
+      }
+      // reveal the answer if any saved attempt was incorrect
+      const shouldReveal =
+        (typeof rec.correct === "boolean" && !rec.correct) ||
+        (typeof rec.shortCorrect === "boolean" && !rec.shortCorrect);
+      setShow(!!shouldReveal);
+    } else {
+      // clear for unseen questions
+      setQuizState(s => ({ ...s, selectedChoice: null, isChoiceCorrect: null, shortAnswerCorrect: null }));
+      setTyped("");
+      setShow(false);
+    }
+  }, [current?.id]);
 
 
   const isCurrentFlagged = current ? flaggedIds.has(current.id) : false;
@@ -213,6 +228,16 @@ export default function App() {
     const isRight = clean(typed) && clean(typed) === clean(current?.answer);
     setShow(!isRight);
     setQuizState((s) => ({ ...s, shortAnswerCorrect: isRight }));
+    if (current?.id != null) {
+      setSavedChoices(prev => ({
+        ...prev,
+        [current.id]: {
+          ...prev[current.id],
+          shortText: typed,
+          shortCorrect: isRight,
+        }
+      }));
+    }
   }
 
   async function generateFromPdf(file) {

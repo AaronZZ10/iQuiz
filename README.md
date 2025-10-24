@@ -1,70 +1,144 @@
-# Getting Started with Create React App
+# Quizzer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Quizzer** is a smart, lightweight web app for reviewing study materials and generating quizzes. You can upload your own questions in JSON/CSV format or import class slides (PDF), and Quizzer will automatically generate quiz questions using the OpenAI API.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+- **AI Quiz Generation:** Upload PDF slides and have questions automatically generated with ChatGPT.
+- **Multiple Modes:** Switch between Quiz, Short Answer, and Flashcard modes.
+- **Progress Tracking:** Automatically saves your selected answers and restores them later.
+- **Flagging System:** Mark questions to review later or focus on flagged ones only.
+- **Question Jump Bar:** Easily navigate between questions, with active and flagged questions highlighted.
+- **Keyboard Navigation:** Use the ← and → arrow keys to move between questions.
+- **Download Deck:** Export your entire deck (or generated questions) to JSON.
+- **Responsive Design:** Works well on desktops and tablets with TailwindCSS.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🧩 Tech Stack
 
-### `npm test`
+- **Frontend:** React + TailwindCSS
+- **Backend:** Node.js + Express
+- **AI Integration:** OpenAI API
+- **PDF Parsing:** `pdfjs-dist` for client-side text extraction
+- **Data Persistence:** In-memory JSON deck, export/import support
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 📦 Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+# Clone this repository
+git clone https://github.com/yourusername/quizzer.git
+cd quizzer
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Install dependencies
+npm install
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Start the React frontend
+npm start
+```
 
-### `npm run eject`
+In another terminal:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+# Move to the server directory
+cd server
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Install backend dependencies
+npm install
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Start the backend API server
+npm run start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+By default, the backend runs at **http://localhost:5050** and the frontend at **http://localhost:3000**.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🧠 Usage
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. **Load Questions**
+   - Upload a `.json` or `.csv` file containing your quiz deck.
+   - Or upload a `.pdf` slide deck to generate questions automatically with ChatGPT.
 
-### Code Splitting
+2. **Choose a Mode**
+   - **Quiz:** Multiple-choice questions with instant feedback.
+   - **Short Answer:** Type your answer and check correctness.
+   - **Flashcard:** Simple front/back mode for rapid review.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+3. **Navigate & Review**
+   - Use the **Previous** and **Next** buttons, or ← / → keys.
+   - Use the **Jump Bar** to move to any question.
+   - Flag difficult questions and optionally review flagged only.
 
-### Analyzing the Bundle Size
+4. **Save or Export**
+   - Download all questions in JSON format for backup or reuse.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 🗂 JSON Format Example
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Here’s the expected structure for your JSON file:
 
-### Advanced Configuration
+```json
+{
+  "items": [
+    {
+      "question": "What does REST stand for?",
+      "answer": "Representational State Transfer",
+      "choices": ["Random", "Representational State Transfer", "Stateful"],
+      "explanation": "An architectural style for web APIs.",
+      "tags": ["web", "apis"]
+    }
+  ]
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+You can also load a plain array of question objects without the `items` wrapper.
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## ⚙️ Environment Setup
 
-### `npm run build` fails to minify
+Create a `.env` file in your `/server` directory with your OpenAI API key:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+OPENAI_API_KEY=your_api_key_here
+PORT=5050
+```
+
+---
+
+## 🧩 Developer Notes
+
+- The app uses `compression` middleware for faster JSON responses.
+- Large decks are auto-windowed in the jump bar to avoid performance drops.
+- Keyboard and scroll behavior are synchronized to keep the active question visible.
+
+---
+
+## 💡 Future Improvements
+
+- Persistent user progress with localStorage
+- Question categories and timed quiz mode
+- Import/export to Google Drive
+- Cloud deployment on AWS or Vercel
+
+---
+
+## 🧑‍💻 Author
+
+**Hao Liu**  
+Senior Computer Science Student @ Texas A&M University  
+Passionate about AI, data visualization, and educational tech tools.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
