@@ -15,10 +15,7 @@ export default function UploadPDF({generateFromPdf, busy, setStatusMsg, setBusy}
             } catch (err) {
               setStatusMsg({ type: "error", text: `Failed: ${err.message}` });
               setBusy(false);
-            } finally {
-              // reset the file input so the same file can be re-uploaded if needed
-              e.target.value = "";
-            }
+            } 
           }}
           className="ml-auto"
         />

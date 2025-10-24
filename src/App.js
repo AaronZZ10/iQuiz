@@ -1,7 +1,7 @@
 // src/App.js
-import React, { useMemo, useRef, useState } from "react";
-import { extractPdfText } from "./pdf";
-import demoDeck from "./demoDeck";
+import { useMemo, useRef, useState, useEffect } from "react";
+import { extractPdfText } from "./utils/pdf";
+import demoDeck from "./utils/demoDeck";
 import { parseCSV } from "./utils/csv";
 import { normalize } from "./utils/normalize";
 import ControlsBar from "./components/ControlsBar";
@@ -9,7 +9,7 @@ import Nav from "./components/Nav";
 import StatusBanner from "./components/StatusBanner";
 import LoadQuestions from "./components/LoadQuestions";
 import UploadPDF from "./components/UploadPDF";
-import Head from "./components/Head";
+import Head from "./components/Header";
 import ShortAnswer from "./components/ShortAnswer";
 import Answer from "./components/Answer";
 
@@ -44,6 +44,7 @@ export default function App() {
   const [statusMsg, setStatusMsg] = useState(null); 
   const fileRef = useRef(null);
   const jumpRef = useRef(null);
+
 
   // Download helpers
   function makeFileName(prefix = "quizzer-export") {
@@ -89,6 +90,26 @@ export default function App() {
     if (flaggedOnly) d = d.filter(q => flaggedIds.has(q.id));
     return d.length ? d : deck;
   }, [deck, filterTag, flaggedOnly, flaggedIds]);
+
+  useEffect(() => {
+    function handleKey(e) {
+      if (busy) return;
+      if (e.key === "ArrowRight") {
+        setIdx((i) => Math.min(i + 1, visible.length - 1));
+        setShow(false);
+        setTyped("");
+        setQuizState({ selectedChoice: null, shortAnswerCorrect: null, isChoiceCorrect: null });
+      } else if (e.key === "ArrowLeft") {
+        setIdx((i) => Math.max(i - 1, 0));
+        setShow(false);
+        setTyped("");
+        setQuizState({ selectedChoice: null, shortAnswerCorrect: null, isChoiceCorrect: null });
+      }
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [busy, visible.length]);
+
 
   const current = visible[idx % Math.max(1, visible.length)];
 

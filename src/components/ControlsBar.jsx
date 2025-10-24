@@ -53,57 +53,56 @@ export default function ControlsBar({
             Flagged only
           </label>
           <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={flashMode}
+            Mode:
+            <select
+              className="px-2 py-1 rounded border"
+              value={
+                flashMode ? "flash" :
+                shortMode ? "short" :
+                "quiz"
+              }
               onChange={(e) => {
-                const v = e.target.checked;
-                setFlashMode(v);
-                if (v) {
-                  // Ensure mutually exclusive with short-answer; reset transient state
+                const val = e.target.value;
+                const resetState = () => {
+                  setSelectedChoice(null);
+                  setIsChoiceCorrect(null);
+                  setShow(false);
+                  setTyped("");
+                };
+
+                if (val === "flash") {
+                  setFlashMode(true);
                   setShortMode(false);
-                  setSelectedChoice(null);
-                  setIsChoiceCorrect(null);
-                  setShow(false);
-                  setTyped("");
-                }
-              }}
-              disabled={busy}
-            />
-            Flashcard mode
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={shortMode}
-              onChange={(e) => {
-                const v = e.target.checked;
-                setShortMode(v);
-                if (v) {
-                  // Turning on short-answer should turn off flashcard
+                  resetState();
+                } else if (val === "short") {
+                  setShortMode(true);
                   setFlashMode(false);
-                  setSelectedChoice(null);
-                  setIsChoiceCorrect(null);
-                  setShow(false);
-                  setTyped("");
+                  resetState();
+                } else {
+                  // quiz (default)
+                  setFlashMode(false);
+                  setShortMode(false);
+                  resetState();
                 }
               }}
               disabled={busy}
-            />
-            Short-answer mode
+            >
+              <option value="quiz">Quiz</option>
+              <option value="short">Short Answer</option>
+              <option value="flash">Flashcard</option>
+            </select>
           </label>
 
-          <div className="flex items-center justify-end mb-3">
-            <button
-              type="button"
-              className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
-              onClick={downloadDeckJSON}
-              disabled={busy || deck.length === 0}
-              title="Download all questions as JSON"
-            >
-              Download
-            </button>
-          </div>
+          <button
+            type="button"
+            className="px-3 py-1.5 rounded-lg border text-sm ml-auto"
+            onClick={downloadDeckJSON}
+            disabled={busy || deck.length === 0}
+            title="Download all questions as JSON"
+          >
+            Download
+          </button>
+          
           
         
         </div>
