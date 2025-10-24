@@ -110,6 +110,28 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [busy, visible.length]);
 
+  useEffect(() => {
+  if (!jumpRef.current) return;
+  const activeButton = jumpRef.current.querySelector(".jump-active");
+  if (activeButton) {
+    const container = jumpRef.current;
+    const buttonRect = activeButton.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const isVisible =
+      buttonRect.left >= containerRect.left &&
+      buttonRect.right <= containerRect.right;
+
+    // Smoothly scroll into view only if it's not already visible
+    if (!isVisible) {
+      activeButton.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }
+}, [idx]);
+
 
   const current = visible[idx % Math.max(1, visible.length)];
 
@@ -303,7 +325,7 @@ export default function App() {
                       const isActive = i === idx;
                       const isFlagged = flaggedIds.has(q.id);
                       let cls = "px-2 py-1 text-xs rounded border shrink-0";
-                      if (isActive) cls += " ring-2 ring-blue-400 border-blue-400";
+                      if (isActive) cls += " ring-2 ring-blue-400 border-blue-400 jump-active";
                       if (isFlagged) cls += " bg-yellow-100 border-yellow-300";
                       else cls += " bg-white";
 
@@ -311,11 +333,11 @@ export default function App() {
                         <button
                           key={q.id ?? i}
                           className={cls}
-                          onClick={() => {
+                          onClick={(e) => {
                             setIdx(i);
                             setShow(false);
-                            setTyped("");
                             setQuizState({ selectedChoice: null, shortAnswerCorrect: null, isChoiceCorrect: null });
+                            e.currentTarget.blur();
                           }}
                           title={`Go to question ${i + 1}${isFlagged ? " (flagged)" : ""}`}
                           disabled={busy}
