@@ -44,6 +44,7 @@ export default function App() {
   const [statusMsg, setStatusMsg] = useState(null); 
   const fileRef = useRef(null);
   const jumpRef = useRef(null);
+  const [savedChoices, setSavedChoices] = useState({}); // { [questionId]: { choice, correct } }
 
 
   // Download helpers
@@ -134,6 +135,21 @@ export default function App() {
 
 
   const current = visible[idx % Math.max(1, visible.length)];
+  useEffect(() => {
+  const qid = current?.id;
+  if (!qid) return;
+  const rec = savedChoices[qid];
+  if (rec) {
+    // restore selection and feedback for this question
+    setQuizState(s => ({ ...s, selectedChoice: rec.choice, isChoiceCorrect: rec.correct }));
+    setShow(!rec.correct); // if it was wrong, keep the answer visible
+  } else {
+    // clear selection for unseen questions
+    setQuizState(s => ({ ...s, selectedChoice: null, isChoiceCorrect: null }));
+    setShow(false);
+  }
+}, [current?.id]);
+
 
   const isCurrentFlagged = current ? flaggedIds.has(current.id) : false;
 
@@ -152,6 +168,7 @@ export default function App() {
     setIdx(0);
     setQuizState({ selectedChoice: null, shortAnswerCorrect: null, isChoiceCorrect: null });
     setFlaggedIds(new Set());
+    setSavedChoices({});
   }
 
   function loadFromText(text) {
@@ -380,8 +397,12 @@ export default function App() {
                           key={i}
                           className={cls}
                           disabled={busy}
-                          onClick={() => {
-                            setQuizState({ selectedChoice: c, isChoiceCorrect: isCorrect, shortAnswerCorrect, });
+                          onClick={(e) => {
+                            e.currentTarget.blur();
+                            setQuizState({ selectedChoice: c, isChoiceCorrect: isCorrect, shortAnswerCorrect });
+                            if (current?.id != null) {
+                              setSavedChoices(prev => ({ ...prev, [current.id]: { choice: c, correct: isCorrect } }));
+                            }
                             setShow(!isCorrect);
                           }}
                         >
