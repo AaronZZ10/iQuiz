@@ -9,6 +9,7 @@ export default function Head({
   busy,
   setStatusMsg,
   setShortAnswer,
+  setSelectedChoice
 }) {
   return (
     <header className="flex items-center justify-between gap-4">
@@ -30,6 +31,7 @@ export default function Head({
             setTyped("");
             setStatusMsg(null);
             setShortAnswer(null);
+            setSelectedChoice(null);
           }}
         >
           Demo Questions

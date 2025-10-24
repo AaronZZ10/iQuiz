@@ -38,11 +38,45 @@ export default function App() {
     isChoiceCorrect: null,
   });
   const [flashMode, setFlashMode] = useState(false);
-
+  const [flaggedIds, setFlaggedIds] = useState(new Set());
+  const [flaggedOnly, setFlaggedOnly] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [statusMsg, setStatusMsg] = useState(null); // {type: "info"|"success"|"error", text: string}
-
+  const [statusMsg, setStatusMsg] = useState(null); 
   const fileRef = useRef(null);
+  const jumpRef = useRef(null);
+
+  // Download helpers
+  function makeFileName(prefix = "quizzer-export") {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    const ts = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}`;
+    return `${prefix}_${ts}.json`;
+  }
+
+  function downloadDeckJSON() {
+    if (!Array.isArray(deck) || deck.length === 0) {
+      setStatusMsg?.({ type: "error", text: "Nothing to download — no questions loaded." });
+      return;
+    }
+    const items = deck.map(q => ({
+      question: q.question ?? "",
+      answer: q.answer ?? "",
+      choices: Array.isArray(q.choices) ? q.choices : [],
+      explanation: q.explanation ?? "",
+      tags: Array.isArray(q.tags) ? q.tags : [],
+    }));
+    const json = JSON.stringify({ items }, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = makeFileName();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    setStatusMsg?.({ type: "success", text: `Downloaded ${items.length} questions as JSON.` });
+  }
 
   const tags = useMemo(() => {
     const s = new Set();
@@ -51,25 +85,47 @@ export default function App() {
   }, [deck]);
 
   const visible = useMemo(() => {
-    const d = filterTag ? deck.filter((q) => q.tags.includes(filterTag)) : deck;
+    let d = filterTag ? deck.filter((q) => q.tags.includes(filterTag)) : deck;
+    if (flaggedOnly) d = d.filter(q => flaggedIds.has(q.id));
     return d.length ? d : deck;
-  }, [deck, filterTag]);
+  }, [deck, filterTag, flaggedOnly, flaggedIds]);
 
   const current = visible[idx % Math.max(1, visible.length)];
+
+  const isCurrentFlagged = current ? flaggedIds.has(current.id) : false;
+
+  function toggleFlag(id) {
+    setFlaggedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   function resetQuiz() {
     setShow(false);
     setTyped("");
     setIdx(0);
     setQuizState({ selectedChoice: null, shortAnswerCorrect: null, isChoiceCorrect: null });
+    setFlaggedIds(new Set());
   }
 
   function loadFromText(text) {
     try {
       let items = [];
-      if (text.trim().startsWith("[")) {
-        const parsed = JSON.parse(text);
-        items = Array.isArray(parsed) ? parsed : parsed.items || [];
+            const trimmed = (text || "").trim();
+
+      // Accept JSON array OR JSON object with { items: [...] }
+      if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) {
+          items = parsed;
+        } else if (parsed && Array.isArray(parsed.items)) {
+          items = parsed.items;
+        } else {
+          throw new Error("JSON must be an array of questions or an object with an 'items' array.");
+        }
       } else {
         items = parseCSV(text);
       }
@@ -165,6 +221,7 @@ export default function App() {
           busy={busy}
           setStatusMsg={setStatusMsg}
           setShortAnswer={(val) => setQuizState((s) => ({ ...s, shortAnswerCorrect: val }))}
+          setSelectedChoice={(v) => setQuizState((s) => ({ ...s, selectedChoice: v }))} 
         />
 
         {/* Status banner */}
@@ -175,6 +232,7 @@ export default function App() {
           generateFromPdf={generateFromPdf}
           busy={busy}
           setStatusMsg={setStatusMsg}
+          setBusy={setBusy}
         />
         <LoadQuestions
           loadFromText={loadFromText}
@@ -186,20 +244,79 @@ export default function App() {
         {/* Quiz Card */}
         <div className="rounded-2xl border bg-white p-6">
           {/* Controls Bar */}
-          <ControlsBar {...{ busy, flashMode, setFlashMode, shortMode, setShortMode, setShow, setTyped, tags, filterTag, setFilterTag, setIdx }} 
+          <ControlsBar {...{ busy, flashMode, setFlashMode, shortMode, setShortMode, setShow, setTyped, tags, filterTag, setFilterTag, setIdx,setFlaggedOnly,toggleFlag,currentId: current?.id,isCurrentFlagged,flaggedOnly, downloadDeckJSON, deck }} 
             setSelectedChoice={(v) => setQuizState((s) => ({ ...s, selectedChoice: v }))} 
             setIsChoiceCorrect={(v) => setQuizState((s) => ({ ...s, isChoiceCorrect: v }))}
             setShortAnswer={(v) => setQuizState((s) => ({ ...s, shortAnswerCorrect: v }))} />
 
+          {/* Top toolbar */}
+          
           {current ? (
             <div className="space-y-4">
-              <div className="text-xs uppercase tracking-wider opacity-70">
-                Question {idx + 1} / {visible.length}
-                {filterTag ? ` (tag: ${filterTag})` : ""}
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider opacity-70">
+                <span>Question {idx + 1} / {visible.length}{filterTag ? ` (tag: ${filterTag})` : ""}</span>
+                {isCurrentFlagged && (
+                  <span className="inline-flex items-center rounded-full bg-yellow-100 text-yellow-800 px-2 py-0.5 text-[10px] border border-yellow-300">
+                    ★ Flagged
+                  </span>
+                )}
               </div>
               <h2 className="text-2xl font-semibold">{current.question}</h2>
               
-    
+              {/* Jump bar (scrollable, non-wrapping) */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="px-2 py-1 text-xs rounded border bg-white hover:bg-gray-100 disabled:opacity-50"
+                  onClick={() => jumpRef.current?.scrollBy({ left: -240, behavior: "smooth" })}
+                  disabled={busy}
+                  aria-label="Scroll left"
+                  title="Scroll left"
+                >
+                  ◀
+                </button>
+
+                <div ref={jumpRef} className="overflow-x-auto">
+                  <div className="flex flex-nowrap whitespace-nowrap gap-1 py-1">
+                    {visible.map((q, i) => {
+                      const isActive = i === idx;
+                      const isFlagged = flaggedIds.has(q.id);
+                      let cls = "px-2 py-1 text-xs rounded border shrink-0";
+                      if (isActive) cls += " ring-2 ring-blue-400 border-blue-400";
+                      if (isFlagged) cls += " bg-yellow-100 border-yellow-300";
+                      else cls += " bg-white";
+
+                      return (
+                        <button
+                          key={q.id ?? i}
+                          className={cls}
+                          onClick={() => {
+                            setIdx(i);
+                            setShow(false);
+                            setTyped("");
+                            setQuizState({ selectedChoice: null, shortAnswerCorrect: null, isChoiceCorrect: null });
+                          }}
+                          title={`Go to question ${i + 1}${isFlagged ? " (flagged)" : ""}`}
+                          disabled={busy}
+                        >
+                          {i + 1}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="px-2 py-1 text-xs rounded border bg-white hover:bg-gray-100 disabled:opacity-50"
+                  onClick={() => jumpRef.current?.scrollBy({ left: 240, behavior: "smooth" })}
+                  disabled={busy}
+                  aria-label="Scroll right"
+                  title="Scroll right"
+                >
+                  ▶
+                </button>
+              </div>
 
               {!shortMode && !flashMode && current.choices?.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

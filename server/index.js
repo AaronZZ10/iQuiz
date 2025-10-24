@@ -96,7 +96,10 @@ app.post("/generate-quiz", async (req, res) => {
             } else if (answer === 0 || answer === 1) {
               answer = answer === 0 ? "True" : "False";
             }
-          } else if (typeof answer === "string" && /^[0-3]$/.test(answer.trim())) {
+          } else if (
+            typeof answer === "string" &&
+            /^[0-3]$/.test(answer.trim())
+          ) {
             const idx = parseInt(answer.trim(), 10);
             if (Array.isArray(it.choices) && it.choices.length > idx) {
               answer = it.choices[idx];

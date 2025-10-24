@@ -1,25 +1,21 @@
-
-import demoDeck from "../demoDeck.js";
-
 export default function LoadQuestions({ loadFromText, busy, fileRef , onFile}) {
   return (
     
             <div className="rounded-2xl border bg-white p-4 space-y-3">
               <div className="flex flex-wrap items-center gap-3">
-                {/* JSON/CSV input */}
-                <label>Upload your own questions in JSON/CSV</label>
+                <label>Upload your own questions in JSON</label>
                 <input
                   type="file"
                   ref={fileRef}
                   onChange={onFile}
-                  accept=".json,.csv,.txt"
+                  accept=".json"
                   disabled={busy}
                   className="ml-auto"
                 />
               </div>
     
               {/* Paste area */}
-              <details className="rounded-xl border p-3">
+              {/* <details className="rounded-xl border p-3">
                 <summary className="cursor-pointer font-medium">
                   Paste JSON / CSV
                 </summary>
@@ -52,7 +48,7 @@ export default function LoadQuestions({ loadFromText, busy, fileRef , onFile}) {
                     Insert example JSON
                   </button>
                 </div>
-              </details>
+              </details> */}
             </div>
     
   );
