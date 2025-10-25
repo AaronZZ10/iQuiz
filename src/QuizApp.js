@@ -337,7 +337,7 @@ export default function QuizApp() {
     try {
       setStatusMsg({
         type: "info",
-        text: `Found ${slideArr.length} slides. Generating quiz questions with OpenAI…`,
+        text: `Found ${slideArr.length} slides. Generating quiz questions with OpenAI… It can take a minute or two.`,
       });
       const resp = await fetch("http://localhost:5050/generate-quiz-stream", {
         method: "POST",
