@@ -484,13 +484,9 @@ export default function QuizApp() {
       <div className="max-w-4xl mx-auto p-6 space-y-6">
         <QuizHeader busy={busy} />
 
-
-        <br />
-        {statusMsg && (
-          <div className="fixed top-[67px] left-0 right-0 mx-auto max-w-4xl px-6 z-40">
-            <StatusBanner statusMsg={statusMsg} busy={busy} />
-          </div>
-        )}
+        <div className="relative h-2 mt-0.5 mb-0">
+          {statusMsg && <StatusBanner statusMsg={statusMsg} busy={busy} />}
+        </div>
 
         {/* Loader controls */}
         <UploadPDF

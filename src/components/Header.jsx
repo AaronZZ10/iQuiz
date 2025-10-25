@@ -5,7 +5,7 @@ export default function QuizHeader({
 }) {
   const [showHelp, setShowHelp] = useState(false);
   return (
-    <header className="flex items-center justify-between gap-4">
+    <header className="flex h-10 items-center justify-between gap-4 pt-4">
       <div>
         <h1 className="text-3xl font-bold">iQuiz</h1>
         <p className="text-sm opacity-80">
@@ -14,21 +14,6 @@ export default function QuizHeader({
         </p>
       </div>
       <div className="flex gap-2">
-        {/* <button
-          disabled={busy}
-          className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
-          onClick={() => {
-            setDeck(normalize(demoDeck));
-            setIdx(0);
-            setShow(false);
-            setTyped("");
-            setStatusMsg(null);
-            setShortAnswer(null);
-            setSelectedChoice(null);
-          }}
-        >
-          Demo Quiz
-        </button> */}
         <button
           disabled={busy}
           className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
