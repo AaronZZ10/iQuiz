@@ -46,117 +46,121 @@ export default function QuizHeader({
           Help
         </button>
       </div>
+
+      
       {showHelp && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <h2 className="text-xl font-bold mb-3">How to Use iQuiz</h2>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 overflow-y-auto max-h-[90vh]">
+            <h2 className="text-xl font-bold mb-3 text-gray-900">How to Use iQuiz</h2>
 
-          <div className="space-y-4 text-sm text-gray-800">
-            <section>
-              <h3 className="font-semibold mb-1">Load Questions</h3>
-              <ul className="list-disc list-inside space-y-1">
-                <li>
-                  <strong>Upload PDF slides</strong> to auto-generate questions
-                  with OpenAI.
-                </li>
-                <li>
-                  Import questions via <strong>JSON/CSV</strong>.
-                  <div className="mt-1">
-                    JSON accepts either a plain array or an object with{" "}
-                    <code className="bg-gray-50 px-1 rounded border">
-                      items
-                    </code>
-                    :
-                  </div>
-                  <pre className="mt-1 rounded bg-gray-50 border p-2 text-xs overflow-auto">{`[{ "question": "...", "answer": "...", "choices": ["A","B","C","D"], "explanation": "", "tags": ["tag"] }]`}</pre>
-                  <pre className="mt-1 rounded bg-gray-50 border p-2 text-xs overflow-auto">{`{ "items": [ { "question": "...", "answer": "..." } ] }`}</pre>
-                  <div className="mt-1">
-                    CSV columns:{" "}
-                    <code className="bg-gray-50 px-1 rounded border">
-                      question,answer,choices,explanation,tags
-                    </code>{" "}
-                    (choices split by <code>|</code>).
-                  </div>
-                </li>
-              </ul>
-            </section>
+            <div className="space-y-4 text-sm text-gray-800">
+              <section>
+                <h3 className="font-semibold mb-1">Load Questions</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>
+                    <strong>Upload PDF slides</strong> to auto-generate questions
+                    with OpenAI.
+                  </li>
+                  <li>
+                    Import questions via <strong>JSON/CSV</strong>.
+                    <div className="mt-1">
+                      JSON accepts either a plain array or an object with{" "}
+                      <code className="bg-gray-50 px-1 rounded border">
+                        items
+                      </code>
+                      :
+                    </div>
+                    <pre className="mt-1 rounded bg-gray-50 border p-2 text-xs overflow-auto">{`[{ "question": "...", "answer": "...", "choices": ["A","B","C","D"], "explanation": "", "tags": ["tag"] }]`}</pre>
+                    <pre className="mt-1 rounded bg-gray-50 border p-2 text-xs overflow-auto">{`{ "items": [ { "question": "...", "answer": "..." } ] }`}</pre>
+                    <div className="mt-1">
+                      CSV columns:{" "}
+                      <code className="bg-gray-50 px-1 rounded border">
+                        question,answer,choices,explanation,tags
+                      </code>{" "}
+                      (choices split by <code>|</code>).
+                    </div>
+                  </li>
+                </ul>
+              </section>
 
-            <section>
-              <h3 className="font-semibold mb-1">Generation Options</h3>
-              <ul className="list-disc list-inside space-y-1">
-                <li>
-                  <strong>Model</strong>: pick the OpenAI model used to generate
-                  questions.
-                </li>
-                <li>
-                  <strong>Target</strong> (optional): hint the model about how
-                  many questions to generate.
-                </li>
-              </ul>
-            </section>
+              <section>
+                <h3 className="font-semibold mb-1">Generation Options</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>
+                    <strong>Model</strong>: pick the OpenAI model used to generate
+                    questions.
+                  </li>
+                  <li>
+                    <strong>Target</strong> (optional): hint the model about how
+                    many questions to generate.
+                  </li>
+                </ul>
+              </section>
 
-            <section>
-              <h3 className="font-semibold mb-1">Modes</h3>
-              <ul className="list-disc list-inside space-y-1">
-                <li>
-                  <strong>Quiz (MCQ)</strong>: pick an option. Your selection is
-                  saved; correct turns green, incorrect turns red and reveals
-                  the answer panel.
-                </li>
-                <li>
-                  <strong>Short Answer</strong>: type your answer and press{" "}
-                  <kbd>Enter</kbd> or click <em>Check</em>. Your typed text and
-                  result are saved per question.
-                </li>
-                <li>
-                  <strong>Flashcard</strong>: lightweight recall view. (Answer
-                  panel shows based on your settings.)
-                </li>
-              </ul>
-            </section>
+              <section>
+                <h3 className="font-semibold mb-1">Modes</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>
+                    <strong>Quiz (MCQ)</strong>: pick an option. Your selection is
+                    saved; correct turns green, incorrect turns red and reveals
+                    the answer panel.
+                  </li>
+                  <li>
+                    <strong>Short Answer</strong>: type your answer and press{" "}
+                    <kbd>Enter</kbd> or click <em>Check</em>. Your typed text and
+                    result are saved per question.
+                  </li>
+                  <li>
+                    <strong>Flashcard</strong>: lightweight recall view. (Answer
+                    panel shows based on your settings.)
+                  </li>
+                </ul>
+              </section>
 
-            <section>
-              <h3 className="font-semibold mb-1">Review &amp; Navigation</h3>
-              <ul className="list-disc list-inside space-y-1">
-                <li>
-                  <strong>Flag</strong> questions and toggle{" "}
-                  <em>Review flagged only</em>.
-                </li>
-                <li>
-                  <strong>Jump bar</strong>: click numbers to jump; the active
-                  question stays auto-scrolled into view.
-                </li>
-                <li>
-                  <strong>Keyboard</strong>: use <kbd>←</kbd> and <kbd>→</kbd>{" "}
-                  for Previous/Next.
-                </li>
-                <li>
-                  Filter by <strong>Tag</strong> from the controls.
-                </li>
-              </ul>
-            </section>
+              <section>
+                <h3 className="font-semibold mb-1">Review &amp; Navigation</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>
+                    <strong>Flag</strong> questions and toggle{" "}
+                    <em>Review flagged only</em>.
+                  </li>
+                  <li>
+                    <strong>Jump bar</strong>: click numbers to jump; the active
+                    question stays auto-scrolled into view.
+                  </li>
+                  <li>
+                    <strong>Keyboard</strong>: use <kbd>←</kbd> and <kbd>→</kbd>{" "}
+                    for Previous/Next.
+                  </li>
+                  <li>
+                    Filter by <strong>Tag</strong> from the controls.
+                  </li>
+                </ul>
+              </section>
 
-            <section>
-              <h3 className="font-semibold mb-1">Save &amp; Export</h3>
-              <ul className="list-disc list-inside space-y-1">
-                <li>
-                  Selections in Quiz mode and attempts in Short Answer mode are
-                  saved while you navigate.
-                </li>
-                <li>
-                  Use <strong>Download JSON</strong> to export the current deck.
-                </li>
-              </ul>
-            </section>
-          </div>
+              <section>
+                <h3 className="font-semibold mb-1">Save &amp; Export</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>
+                    Selections in Quiz mode and attempts in Short Answer mode are
+                    saved while you navigate.
+                  </li>
+                  <li>
+                    Use <strong>Download JSON</strong> to export the current deck.
+                  </li>
+                </ul>
+              </section>
+            </div>
 
-          <div className="mt-5 flex justify-end">
-            <button
-              type="button"
-              className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100"
-              onClick={() => setShowHelp(false)}
-            >
-              Close
-            </button>
+            <div className="mt-5 flex justify-end">
+              <button
+                type="button"
+                className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100"
+                onClick={() => setShowHelp(false)}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
