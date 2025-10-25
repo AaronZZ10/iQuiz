@@ -2,7 +2,7 @@ export default function StatusBanner({statusMsg, busy}) {
   return (
     <div
       className={
-        "flex items-center gap-2 rounded-lg border p-3 text-sm " +
+        "flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs " +
         (statusMsg.type === "success"
           ? "bg-green-50 border-green-200 text-green-900"
           : statusMsg.type === "error"

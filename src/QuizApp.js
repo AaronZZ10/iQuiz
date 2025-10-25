@@ -207,6 +207,29 @@ export default function QuizApp() {
     }
   }, [current?.id, savedChoices]);
 
+  // Dev-only shortcut: Ctrl+Alt+1 (Win/Linux) or Cmd+1 (macOS) to load demo quiz
+  useEffect(() => {
+    function onDevShortcut(e) {
+      const isOne = e.key === "1";
+      const macCombo = e.metaKey && isOne; // Cmd+1
+      const winCombo = e.ctrlKey && e.altKey && isOne; // Ctrl+Alt+1
+      if (macCombo || winCombo) {
+        e.preventDefault();
+        if (busy) return;
+        try {
+          const items = normalize(demoDeck);
+          setDeck(items);
+          resetQuiz();
+          setStatusMsg({ type: "info", text: "Loaded demo quiz." });
+        } catch (err) {
+          setStatusMsg({ type: "error", text: "Failed to load demo quiz." });
+        }
+      }
+    }
+    window.addEventListener("keydown", onDevShortcut);
+    return () => window.removeEventListener("keydown", onDevShortcut);
+  }, [busy]);
+
   const isCurrentFlagged = current ? flaggedIds.has(current.id) : false;
 
   function toggleFlag(id) {
@@ -459,24 +482,15 @@ export default function QuizApp() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <div className="max-w-4xl mx-auto p-6 space-y-6">
-        <QuizHeader
-          demoDeck={demoDeck}
-          setDeck={setDeck}
-          setIdx={setIdx}
-          setShow={setShow}
-          setTyped={setTyped}
-          busy={busy}
-          setStatusMsg={setStatusMsg}
-          setShortAnswer={(val) =>
-            setQuizState((s) => ({ ...s, shortAnswerCorrect: val }))
-          }
-          setSelectedChoice={(v) =>
-            setQuizState((s) => ({ ...s, selectedChoice: v }))
-          }
-        />
+        <QuizHeader busy={busy} />
 
-        {/* Status banner */}
-        {statusMsg && <StatusBanner statusMsg={statusMsg} busy={busy} />}
+
+        <br />
+        {statusMsg && (
+          <div className="fixed top-[67px] left-0 right-0 mx-auto max-w-4xl px-6 z-40">
+            <StatusBanner statusMsg={statusMsg} busy={busy} />
+          </div>
+        )}
 
         {/* Loader controls */}
         <UploadPDF
@@ -733,7 +747,9 @@ export default function QuizApp() {
               />
             </div>
           ) : (
-            <div className="text-center py-16 opacity-80">No cards loaded.</div>
+            <div className="text-center py-16 opacity-80">
+              No questions loaded.
+            </div>
           )}
         </div>
       </div>

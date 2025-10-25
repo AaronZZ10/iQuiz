@@ -1,16 +1,7 @@
-import { normalize } from "../utils/normalize.js";
 import { useState } from "react";
 
 export default function QuizHeader({
-  demoDeck,
-  setDeck,
-  setIdx,
-  setShow,
-  setTyped,
   busy,
-  setStatusMsg,
-  setShortAnswer,
-  setSelectedChoice,
 }) {
   const [showHelp, setShowHelp] = useState(false);
   return (
@@ -23,7 +14,7 @@ export default function QuizHeader({
         </p>
       </div>
       <div className="flex gap-2">
-        <button
+        {/* <button
           disabled={busy}
           className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
           onClick={() => {
@@ -37,7 +28,7 @@ export default function QuizHeader({
           }}
         >
           Demo Quiz
-        </button>
+        </button> */}
         <button
           disabled={busy}
           className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
@@ -101,18 +92,14 @@ export default function QuizHeader({
                 <h3 className="font-semibold mb-1">Modes</h3>
                 <ul className="list-disc list-inside space-y-1">
                   <li>
-                    <strong>Quiz (MCQ)</strong>: pick an option. Your selection is
-                    saved; correct turns green, incorrect turns red and reveals
-                    the answer panel.
+                    <strong>Quiz (MCQ)</strong>: pick an option.
                   </li>
                   <li>
                     <strong>Short Answer</strong>: type your answer and press{" "}
-                    <kbd>Enter</kbd> or click <em>Check</em>. Your typed text and
-                    result are saved per question.
+                    <kbd>Enter</kbd> or click <em>Check</em>.
                   </li>
                   <li>
-                    <strong>Flashcard</strong>: lightweight recall view. (Answer
-                    panel shows based on your settings.)
+                    <strong>Flashcard</strong>: lightweight recall view. Always reveals the answer.
                   </li>
                 </ul>
               </section>
@@ -150,6 +137,15 @@ export default function QuizHeader({
                   </li>
                 </ul>
               </section>
+
+              <section>
+                <h3 className="font-semibold mb-1">Developer Shortcuts</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>
+                    <strong>Load Demo Quiz</strong>: press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>1</kbd> (Windows/Linux) or <kbd>⌘</kbd> + <kbd>1</kbd> (macOS).
+                  </li>
+                </ul>
+              </section>
             </div>
 
             <div className="mt-5 flex justify-end">
@@ -164,6 +160,8 @@ export default function QuizHeader({
           </div>
         </div>
       )}
+
+      
     </header>
   );
 }
