@@ -11,7 +11,7 @@ export default function UploadPDF({
   return (
     <div className="rounded-2xl border bg-white p-4 space-y-3">
       <div className="flex flex-wrap items-center gap-3 text-sm">
-       <label className="font-bold">Upload your slides to generate a quiz with AI</label>
+       <label className="font-bold">Upload Lecture Slides to Generate a Quiz with A.I.</label>
       </div>
       <div className="flex flex-wrap items-center gap-3 text-sm">
         

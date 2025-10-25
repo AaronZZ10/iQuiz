@@ -48,9 +48,10 @@ export default function QuizzApp() {
   const [savedChoices, setSavedChoices] = useState({});
   const [model, setModel] = useState("gpt-5-nano");
   const [targetCount, setTargetCount] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Download helpers
-  function makeFileName(prefix = "quizzer-export") {
+  function makeFileName(prefix = "iQuiz_export") {
     const d = new Date();
     const pad = (n) => String(n).padStart(2, "0");
     const ts = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
@@ -129,27 +130,43 @@ export default function QuizzApp() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [busy, visible.length]);
 
-  useEffect(() => {
-    if (!jumpRef.current) return;
-    const activeButton = jumpRef.current.querySelector(".jump-active");
-    if (activeButton) {
-      const container = jumpRef.current;
-      const buttonRect = activeButton.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-      const isVisible =
-        buttonRect.left >= containerRect.left &&
-        buttonRect.right <= containerRect.right;
+  // helper
+function centerChildInScroller(container, el, smooth = true) {
+  const cRect = container.getBoundingClientRect();
+  const eRect = el.getBoundingClientRect();
 
-      // Smoothly scroll into view only if it's not already visible
-      if (!isVisible) {
-        activeButton.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center",
-        });
-      }
-    }
-  }, [idx]);
+  const current = container.scrollLeft;
+  // how far the element’s left edge is from the container’s left *in content coords*
+  const deltaLeft = (eRect.left - cRect.left);
+  // move so the element’s center aligns to container center
+  const desiredDelta = deltaLeft - (cRect.width / 2 - eRect.width / 2);
+  let target = current + desiredDelta;
+
+  // clamp
+  const max = container.scrollWidth - container.clientWidth;
+  if (target < 0) target = 0;
+  if (target > max) target = max;
+
+  container.scrollTo({
+    left: target,
+    behavior: smooth ? "smooth" : "auto",
+  });
+}
+
+useEffect(() => {
+  const container = jumpRef.current;
+  if (!container) return;
+
+  const activeButton = container.querySelector(".jump-active");
+  if (!activeButton) return;
+
+  // Wait a tick so layout reflects any new render/size changes
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const raf = requestAnimationFrame(() => {
+    centerChildInScroller(container, activeButton, !reduceMotion);
+  });
+  return () => cancelAnimationFrame(raf);
+}, [idx, visible.length]);
 
   const current = visible[idx % Math.max(1, visible.length)];
   useEffect(() => {
@@ -208,8 +225,17 @@ export default function QuizzApp() {
       shortAnswerCorrect: null,
       isChoiceCorrect: null,
     });
+    setFilterTag("");
     setFlaggedIds(new Set());
     setSavedChoices({});
+    setDeck((prevDeck) =>
+      prevDeck.map((q) => ({
+        ...q,
+        choices: Array.isArray(q.choices)
+          ? [...q.choices].sort(() => Math.random() - 0.5)
+          : q.choices,
+      }))
+    );
   }
 
   function loadFromText(text) {
@@ -250,6 +276,7 @@ export default function QuizzApp() {
     const reader = new FileReader();
     reader.onload = () => loadFromText(String(reader.result));
     reader.readAsText(f);
+    e.target.value = null;
   }
 
   function checkShort() {
@@ -360,6 +387,8 @@ export default function QuizzApp() {
           busy={busy}
           fileRef={fileRef}
           onFile={onFile}
+          downloadDeckJSON={downloadDeckJSON}
+          deck={deck}
         />
 
         {/* Quiz Card */}
@@ -386,6 +415,11 @@ export default function QuizzApp() {
               downloadDeckJSON,
               deck,
               resetQuiz,
+              flaggedIds,
+              setDeck,
+              showConfirm,
+              setShowConfirm,
+              setStatusMsg,
             }}
             setSelectedChoice={(v) =>
               setQuizState((s) => ({ ...s, selectedChoice: v }))
@@ -399,7 +433,6 @@ export default function QuizzApp() {
           />
 
           {/* Top toolbar */}
-
           {current ? (
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-xs uppercase tracking-wider opacity-70">
@@ -407,17 +440,34 @@ export default function QuizzApp() {
                   Question {idx + 1} / {visible.length}
                   {filterTag ? ` (tag: ${filterTag})` : ""}
                 </span>
-                {isCurrentFlagged && (
-                  <span className="inline-flex items-center rounded-full bg-yellow-100 text-yellow-800 px-2 py-0.5 text-[10px] border border-yellow-300">
-                    ★ Flagged
-                  </span>
-                )}
+
+                <button
+                  type="button"
+                  className={
+                    "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] border " +
+                    (isCurrentFlagged
+                      ? "bg-yellow-100 text-yellow-800 border-yellow-300"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50")
+                  }
+                  onClick={() => current && toggleFlag(current.id)}
+                  disabled={busy || !current}
+                  title={
+                    isCurrentFlagged
+                      ? "Unflag this question"
+                      : "Flag this question"
+                  }
+                  aria-pressed={isCurrentFlagged ? "true" : "false"}
+                >
+                  {isCurrentFlagged ? "★ Flagged" : "☆ Flag"}
+                </button>
               </div>
-              <h2 className="text-2xl font-semibold min-h-[4rem]">{current.question}</h2>
+              <h2 className="text-2xl font-semibold min-h-[4rem]">
+                {current.question}
+              </h2>
 
               {/* Jump bar (scrollable, non-wrapping) */}
               <div className="flex items-center gap-2">
-                <button
+                {/* <button
                   type="button"
                   className="px-2 py-1 text-xs rounded border bg-white hover:bg-gray-100 disabled:opacity-50"
                   onClick={() =>
@@ -431,9 +481,9 @@ export default function QuizzApp() {
                   title="Scroll left"
                 >
                   ◀
-                </button>
+                </button> */}
 
-                <div ref={jumpRef} className="overflow-x-auto">
+                <div ref={jumpRef} className="overflow-x-auto pb-3" style={{ scrollbarGutter: 'stable' }}>
                   <div className="flex flex-nowrap whitespace-nowrap gap-1 py-1">
                     {visible.map((q, i) => {
                       const isActive = i === idx;
@@ -471,7 +521,7 @@ export default function QuizzApp() {
                   </div>
                 </div>
 
-                <button
+                {/* <button
                   type="button"
                   className="px-2 py-1 text-xs rounded border bg-white hover:bg-gray-100 disabled:opacity-50"
                   onClick={() =>
@@ -482,7 +532,7 @@ export default function QuizzApp() {
                   title="Scroll right"
                 >
                   ▶
-                </button>
+                </button> */}
               </div>
 
               {!shortMode && !flashMode && current.choices?.length > 0 && (

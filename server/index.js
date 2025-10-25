@@ -66,7 +66,7 @@ app.post("/generate-quiz", async (req, res) => {
       "gpt-4o-mini",
     ]);
     const modelToUse = ALLOWED_MODELS.has(model) ? model : "gpt-5-nano";
-    console.log(`🧠 Using OpenAI model: ${modelToUse}`);
+    
     if (!Array.isArray(slides) || !slides.length) {
       return res.status(400).json({ error: "slides[] required" });
     }
@@ -84,12 +84,6 @@ app.post("/generate-quiz", async (req, res) => {
         { type: "text", text: `Produce JSON now. ${extra}` },
       ];
 
-      // Use Chat Completions (works broadly). You can swap to Responses API if you prefer.
-      console.log("🚀 Sending request to OpenAI:");
-      console.log(
-        "Prompt preview:",
-        user.map((m) => m.text || "").join("\n---\n")
-      );
       const resp = await openai.chat.completions.create({
         model: modelToUse,
         response_format: { type: "json_object" },
