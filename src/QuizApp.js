@@ -23,7 +23,7 @@ const clean = (s) =>
     .trim();
 
 /* ---------- app ---------- */
-export default function QuizzApp() {
+export default function QuizApp() {
   const [deck, setDeck] = useState([]);
   const [idx, setIdx] = useState(0);
   const [show, setShow] = useState(false);
@@ -131,42 +131,44 @@ export default function QuizzApp() {
   }, [busy, visible.length]);
 
   // helper
-function centerChildInScroller(container, el, smooth = true) {
-  const cRect = container.getBoundingClientRect();
-  const eRect = el.getBoundingClientRect();
+  function centerChildInScroller(container, el, smooth = true) {
+    const cRect = container.getBoundingClientRect();
+    const eRect = el.getBoundingClientRect();
 
-  const current = container.scrollLeft;
-  // how far the element’s left edge is from the container’s left *in content coords*
-  const deltaLeft = (eRect.left - cRect.left);
-  // move so the element’s center aligns to container center
-  const desiredDelta = deltaLeft - (cRect.width / 2 - eRect.width / 2);
-  let target = current + desiredDelta;
+    const current = container.scrollLeft;
+    // how far the element’s left edge is from the container’s left *in content coords*
+    const deltaLeft = eRect.left - cRect.left;
+    // move so the element’s center aligns to container center
+    const desiredDelta = deltaLeft - (cRect.width / 2 - eRect.width / 2);
+    let target = current + desiredDelta;
 
-  // clamp
-  const max = container.scrollWidth - container.clientWidth;
-  if (target < 0) target = 0;
-  if (target > max) target = max;
+    // clamp
+    const max = container.scrollWidth - container.clientWidth;
+    if (target < 0) target = 0;
+    if (target > max) target = max;
 
-  container.scrollTo({
-    left: target,
-    behavior: smooth ? "smooth" : "auto",
-  });
-}
+    container.scrollTo({
+      left: target,
+      behavior: smooth ? "smooth" : "auto",
+    });
+  }
 
-useEffect(() => {
-  const container = jumpRef.current;
-  if (!container) return;
+  useEffect(() => {
+    const container = jumpRef.current;
+    if (!container) return;
 
-  const activeButton = container.querySelector(".jump-active");
-  if (!activeButton) return;
+    const activeButton = container.querySelector(".jump-active");
+    if (!activeButton) return;
 
-  // Wait a tick so layout reflects any new render/size changes
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const raf = requestAnimationFrame(() => {
-    centerChildInScroller(container, activeButton, !reduceMotion);
-  });
-  return () => cancelAnimationFrame(raf);
-}, [idx, visible.length]);
+    // Wait a tick so layout reflects any new render/size changes
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const raf = requestAnimationFrame(() => {
+      centerChildInScroller(container, activeButton, !reduceMotion);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [idx, visible.length]);
 
   const current = visible[idx % Math.max(1, visible.length)];
   useEffect(() => {
@@ -271,6 +273,8 @@ useEffect(() => {
   }
 
   function onFile(e) {
+    setDeck([]);
+    resetQuiz();
     const f = e.target.files?.[0];
     if (!f) return;
     const reader = new FileReader();
@@ -295,58 +299,197 @@ useEffect(() => {
     }
   }
 
-  async function generateFromPdf(file) {
-    // 1) Extract slides (client-side)
-    setBusy(true);
-    setStatusMsg({ type: "info", text: "Extracting slides from PDF…" });
-    const slides = await extractPdfText(file);
-    if (!slides.length) {
-      setStatusMsg({
-        type: "error",
-        text: "No extractable text found in the PDF.",
-      });
-      setBusy(false);
-      return;
-    }
+  // async function generateFromPdf(file) {
+  //   // 1) Extract slides (client-side)
+  //   setBusy(true);
+  //   setStatusMsg({ type: "info", text: "Extracting slides from PDF…" });
+  //   const slides = await extractPdfText(file);
+  //   if (!slides.length) {
+  //     setStatusMsg({
+  //       type: "error",
+  //       text: "No extractable text found in the PDF.",
+  //     });
+  //     setBusy(false);
+  //     return;
+  //   }
 
-    setStatusMsg({
-      type: "info",
-      text: `Found ${slides.length} slides. Generating quiz questions with OpenAI…`,
-    });
+  //   setStatusMsg({
+  //     type: "info",
+  //     text: `Found ${slides.length} slides. Generating quiz questions with OpenAI…`,
+  //   });
 
-    // 2) Call your backend to generate questions
-    const resp = await fetch("http://localhost:5050/generate-quiz", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slides, model, target: Number(targetCount) }),
-    });
-    if (!resp.ok) throw new Error(`Server error ${resp.status}`);
-    const data = await resp.json();
+  //   // 2) Call your backend to generate questions
+  //   const resp = await fetch("http://localhost:5050/generate-quiz", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ slides, model, target: Number(targetCount) }),
+  //   });
+  //   if (!resp.ok) throw new Error(`Server error ${resp.status}`);
+  //   const data = await resp.json();
 
-    const items = (data.items || []).map((q) => ({
-      question: q.question || "",
-      answer: q.answer || "",
-      choices: Array.isArray(q.choices) ? q.choices : [],
-      explanation: q.explanation || "",
-      tags: Array.isArray(q.tags) ? q.tags : [],
-    }));
+  //   const items = (data.items || []).map((q) => ({
+  //     question: q.question || "",
+  //     answer: q.answer || "",
+  //     choices: Array.isArray(q.choices) ? q.choices : [],
+  //     explanation: q.explanation || "",
+  //     tags: Array.isArray(q.tags) ? q.tags : [],
+  //   }));
 
-    if (!items.length) {
-      setStatusMsg({
-        type: "error",
-        text: "No questions were generated. Try a slide deck with more text.",
-      });
-      setBusy(false);
-      return;
-    }
+  //   if (!items.length) {
+  //     setStatusMsg({
+  //       type: "error",
+  //       text: "No questions were generated. Try a slide deck with more text.",
+  //     });
+  //     setBusy(false);
+  //     return;
+  //   }
 
-    setDeck(normalize(items));
+  //   setDeck(normalize(items));
+  //   resetQuiz();
+  //   setStatusMsg({
+  //     type: "success",
+  //     text: `Success! Generated ${items.length} questions.`,
+  //   });
+  //   setBusy(false);
+  // }
+
+  async function generateFromPdfStream(slides, model, target) {
+    // Coerce `slides` to a non-empty array of strings. If a File (PDF) was passed, extract text here.
+    setDeck([]); // clear existing deck
     resetQuiz();
-    setStatusMsg({
-      type: "success",
-      text: `Success! Generated ${items.length} questions.`,
-    });
-    setBusy(false);
+    let slideArr = slides;
+    try {
+      // Detect a File-like object for a PDF
+      if (
+        slideArr &&
+        typeof slideArr === "object" &&
+        typeof slideArr.arrayBuffer === "function" &&
+        (slideArr.type === "application/pdf" ||
+          /\.pdf$/i.test(slideArr.name || ""))
+      ) {
+        setStatusMsg({ type: "info", text: "Extracting slides from PDF…" });
+        slideArr = await extractPdfText(slideArr);
+      }
+    } catch (_) {}
+
+    if (!Array.isArray(slideArr)) {
+      throw new Error(
+        "No slides extracted (expected an array of slide texts)."
+      );
+    }
+    slideArr = slideArr.map((s) => String(s ?? "").trim()).filter(Boolean);
+    if (slideArr.length === 0) {
+      throw new Error("No extractable text found in the PDF/slides.");
+    }
+    try {
+      setStatusMsg({
+        type: "info",
+        text: "Generating questions (streaming)...",
+      });
+      const resp = await fetch("http://localhost:5050/generate-quiz-stream", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({ slides: slideArr, model, target }),
+      });
+
+      // If HTTP failed, surface details
+      if (!resp.ok) {
+        const txt = await resp.text().catch(() => "");
+        throw new Error(
+          `Stream HTTP ${resp.status} ${resp.statusText}${
+            txt ? ` — ${txt.slice(0, 200)}` : ""
+          }`
+        );
+      }
+
+      // Some browsers (notably Safari) don't expose ReadableStream for CORS + event-stream.
+      if (!resp.body || typeof resp.body.getReader !== "function") {
+        // Fallback to non-streaming endpoint so UX still works
+        const fallback = await fetch("http://localhost:5050/generate-quiz", {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slides: slideArr, model, target }),
+        });
+        if (!fallback.ok) {
+          const t = await fallback.text().catch(() => "");
+          throw new Error(
+            `Fallback HTTP ${fallback.status} ${fallback.statusText}${
+              t ? ` — ${t.slice(0, 200)}` : ""
+            }`
+          );
+        }
+        const data = await fallback.json();
+        const items = (data.items || []).map((q) => ({
+          question: String(q.question ?? ""),
+          answer: String(q.answer ?? ""),
+          choices: Array.isArray(q.choices) ? q.choices.map(String) : [],
+          explanation: String(q.explanation ?? ""),
+          tags: Array.isArray(q.tags) ? q.tags.map(String) : [],
+        }));
+        setDeck(normalize(items));
+        setStatusMsg({
+          type: "success",
+          text: `Generated ${items.length} questions (fallback, no streaming).`,
+        });
+        return;
+      }
+
+      // Streaming path (SSE over fetch)
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+
+        // Split into SSE frames separated by blank lines
+        const frames = buf.split("\n\n");
+        buf = frames.pop() || ""; // leftover partial frame
+
+        for (const frame of frames) {
+          const lines = frame.split("\n");
+          const event =
+            lines
+              .find((l) => l.startsWith("event:"))
+              ?.slice(6)
+              .trim() || "message";
+          const dataLines = lines
+            .filter((l) => l.startsWith("data:"))
+            .map((l) => l.slice(5));
+          const dataRaw = dataLines.join("\n").trim() || "{}";
+
+          try {
+            const payload = JSON.parse(dataRaw);
+            if (event === "item") {
+              setDeck((d) => normalize([...d, payload.item]));
+            } else if (event === "done") {
+              setStatusMsg({
+                type: "success",
+                text: `Done! Received ${payload.total} questions.`,
+              });
+            } else if (event === "error") {
+              setStatusMsg({
+                type: "error",
+                text: payload.error || "Stream error.",
+              });
+            }
+          } catch (e) {
+            // Ignore parse errors from partial frames; keep buffering
+            // Optionally log: console.debug("SSE parse issue:", e, { event, dataRaw });
+          }
+        }
+      }
+    } catch (err) {
+      setStatusMsg({ type: "error", text: `Failed: ${err.message}` });
+      throw err;
+    }
   }
 
   return (
@@ -373,7 +516,7 @@ useEffect(() => {
 
         {/* Loader controls */}
         <UploadPDF
-          generateFromPdf={generateFromPdf}
+          generateFromPdf={generateFromPdfStream}
           busy={busy}
           setStatusMsg={setStatusMsg}
           setBusy={setBusy}
@@ -483,7 +626,11 @@ useEffect(() => {
                   ◀
                 </button> */}
 
-                <div ref={jumpRef} className="overflow-x-auto pb-3" style={{ scrollbarGutter: 'stable' }}>
+                <div
+                  ref={jumpRef}
+                  className="overflow-x-auto pb-3"
+                  style={{ scrollbarGutter: "stable" }}
+                >
                   <div className="flex flex-nowrap whitespace-nowrap gap-1 py-1">
                     {visible.map((q, i) => {
                       const isActive = i === idx;
