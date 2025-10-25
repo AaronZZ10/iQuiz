@@ -36,7 +36,7 @@ export default function UploadPDF({
             type="number"
             min={1}
             inputMode="numeric"
-            className="w-20 px-2 py-1 rounded border"
+            className="w-14 px-2 py-1 rounded border"
             value={targetCount}
             onChange={(e) => setTargetCount(e.target.value)}
             placeholder="N/A"

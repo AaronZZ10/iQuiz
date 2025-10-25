@@ -298,63 +298,13 @@ export default function QuizApp() {
       }));
     }
   }
-
-  // async function generateFromPdf(file) {
-  //   // 1) Extract slides (client-side)
-  //   setBusy(true);
-  //   setStatusMsg({ type: "info", text: "Extracting slides from PDF…" });
-  //   const slides = await extractPdfText(file);
-  //   if (!slides.length) {
-  //     setStatusMsg({
-  //       type: "error",
-  //       text: "No extractable text found in the PDF.",
-  //     });
-  //     setBusy(false);
-  //     return;
-  //   }
-
-  //   setStatusMsg({
-  //     type: "info",
-  //     text: `Found ${slides.length} slides. Generating quiz questions with OpenAI…`,
-  //   });
-
-  //   // 2) Call your backend to generate questions
-  //   const resp = await fetch("http://localhost:5050/generate-quiz", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ slides, model, target: Number(targetCount) }),
-  //   });
-  //   if (!resp.ok) throw new Error(`Server error ${resp.status}`);
-  //   const data = await resp.json();
-
-  //   const items = (data.items || []).map((q) => ({
-  //     question: q.question || "",
-  //     answer: q.answer || "",
-  //     choices: Array.isArray(q.choices) ? q.choices : [],
-  //     explanation: q.explanation || "",
-  //     tags: Array.isArray(q.tags) ? q.tags : [],
-  //   }));
-
-  //   if (!items.length) {
-  //     setStatusMsg({
-  //       type: "error",
-  //       text: "No questions were generated. Try a slide deck with more text.",
-  //     });
-  //     setBusy(false);
-  //     return;
-  //   }
-
-  //   setDeck(normalize(items));
-  //   resetQuiz();
-  //   setStatusMsg({
-  //     type: "success",
-  //     text: `Success! Generated ${items.length} questions.`,
-  //   });
-  //   setBusy(false);
-  // }
-
-  async function generateFromPdfStream(slides, model, target) {
+  
+  async function generateFromPdfStream(slides) {
+    const payloadTarget = Number(targetCount) || undefined;
+    const payloadModel = model; // from state
+    console.log("📦 Streaming request payload:", { model: payloadModel, target: payloadTarget });
     // Coerce `slides` to a non-empty array of strings. If a File (PDF) was passed, extract text here.
+    setBusy(true);
     setDeck([]); // clear existing deck
     resetQuiz();
     let slideArr = slides;
@@ -384,7 +334,7 @@ export default function QuizApp() {
     try {
       setStatusMsg({
         type: "info",
-        text: "Generating questions (streaming)...",
+        text: `Found ${slideArr.length} slides. Generating quiz questions with OpenAI…`,
       });
       const resp = await fetch("http://localhost:5050/generate-quiz-stream", {
         method: "POST",
@@ -393,7 +343,7 @@ export default function QuizApp() {
           "Content-Type": "application/json",
           Accept: "text/event-stream",
         },
-        body: JSON.stringify({ slides: slideArr, model, target }),
+        body: JSON.stringify({ slides: slideArr, model: payloadModel, target: payloadTarget }),
       });
 
       // If HTTP failed, surface details
@@ -413,7 +363,7 @@ export default function QuizApp() {
           method: "POST",
           mode: "cors",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ slides: slideArr, model, target }),
+          body: JSON.stringify({ slides: slideArr, model: payloadModel, target: payloadTarget }),
         });
         if (!fallback.ok) {
           const t = await fallback.text().catch(() => "");
@@ -436,6 +386,7 @@ export default function QuizApp() {
           type: "success",
           text: `Generated ${items.length} questions (fallback, no streaming).`,
         });
+        setBusy(false);
         return;
       }
 
@@ -470,11 +421,13 @@ export default function QuizApp() {
             if (event === "item") {
               setDeck((d) => normalize([...d, payload.item]));
             } else if (event === "done") {
+              setBusy(false);
               setStatusMsg({
                 type: "success",
                 text: `Done! Received ${payload.total} questions.`,
               });
             } else if (event === "error") {
+              setBusy(false);
               setStatusMsg({
                 type: "error",
                 text: payload.error || "Stream error.",
