@@ -88,7 +88,7 @@ export default function QuizHeader({
                 <ul className="list-disc list-inside space-y-1">
                   <li>
                     <strong>Model</strong>: pick the OpenAI model used to generate
-                    questions.
+                    questions. (Higher-capacity models yield better results but will take longer times and cost more.)
                   </li>
                   <li>
                     <strong>Target</strong> (optional): hint the model about how

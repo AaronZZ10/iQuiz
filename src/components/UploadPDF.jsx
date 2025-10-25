@@ -23,10 +23,10 @@ export default function UploadPDF({
             onChange={(e) => setModel(e.target.value)}
             disabled={busy}
           >
-            <option value="gpt-5-nano">gpt-5-nano</option>
-            <option value="gpt-5-mini">gpt-5-mini</option>
-            <option value="gpt-5">gpt-5</option>
-            <option value="gpt-4o-mini">gpt-4o-mini</option>
+            <option value="gpt-5-nano">GPT-5 nano</option>
+            <option value="gpt-5-mini">GPT-5 mini</option>
+            <option value="gpt-5">GPT-5</option>
+            <option value="gpt-4o-mini">GPT-4o mini</option>
           </select>
         </label>
 

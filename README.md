@@ -1,144 +1,75 @@
-# Quizzer
+# iQuiz
 
-**Quizzer** is a smart, lightweight web app for reviewing study materials and generating quizzes. You can upload your own questions in JSON/CSV format or import class slides (PDF), and Quizzer will automatically generate quiz questions using the OpenAI API.
-
----
+iQuiz is a web-based intelligent quiz generator and reviewer built with React, TailwindCSS, and Node.js.  
+It allows users to upload their study materials (JSON, CSV, or PDF slides) and automatically generate review questions using OpenAI models.
 
 ## 🚀 Features
 
-- **AI Quiz Generation:** Upload PDF slides and have questions automatically generated with ChatGPT.
-- **Multiple Modes:** Switch between Quiz, Short Answer, and Flashcard modes.
-- **Progress Tracking:** Automatically saves your selected answers and restores them later.
-- **Flagging System:** Mark questions to review later or focus on flagged ones only.
-- **Question Jump Bar:** Easily navigate between questions, with active and flagged questions highlighted.
-- **Keyboard Navigation:** Use the ← and → arrow keys to move between questions.
-- **Download Deck:** Export your entire deck (or generated questions) to JSON.
-- **Responsive Design:** Works well on desktops and tablets with TailwindCSS.
-
----
+- **Upload PDF, JSON, or CSV:** Load class slides or question sets directly.
+- **Automatic Quiz Generation:** Uses OpenAI API to generate questions and answers from your slides.
+- **Model Selection:** Choose between different GPT models for question generation.
+- **Target Question Count:** Specify how many questions to generate.
+- **Quiz Modes:**
+  - **Multiple-choice**
+  - **Short-answer**
+  - **Flashcard review**
+- **Flag & Review:** Mark questions to revisit and review flagged ones later.
+- **Keyboard Navigation:** Use ← and → arrows to move between questions.
+- **Download / Upload Decks:** Save generated quizzes in JSON format or reupload them later.
+- **Real-time Streaming:** Questions load incrementally as OpenAI streams results.
+- **Responsive UI:** Built with TailwindCSS for a clean, adaptive design.
+- **Help Window:** Displays usage instructions and tips in an accessible popup.
 
 ## 🧩 Tech Stack
 
-- **Frontend:** React + TailwindCSS
+- **Frontend:** React, TailwindCSS
 - **Backend:** Node.js + Express
-- **AI Integration:** OpenAI API
-- **PDF Parsing:** `pdfjs-dist` for client-side text extraction
-- **Data Persistence:** In-memory JSON deck, export/import support
+- **AI Integration:** OpenAI API (streaming responses)
+- **PDF Parsing:** pdf.js
+- **Deployment:** AWS (recommended setup for production)
 
----
+## ⚙️ Setup
 
-## 📦 Installation
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/yourusername/iQuiz.git
+   cd iQuiz
+   ```
 
-```bash
-# Clone this repository
-git clone https://github.com/yourusername/quizzer.git
-cd quizzer
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-# Install dependencies
-npm install
+3. Start the backend:
+   ```bash
+   cd server
+   node index.js
+   ```
 
-# Start the React frontend
-npm start
-```
-
-In another terminal:
-
-```bash
-# Move to the server directory
-cd server
-
-# Install backend dependencies
-npm install
-
-# Start the backend API server
-npm run start
-```
-
-By default, the backend runs at **http://localhost:5050** and the frontend at **http://localhost:3000**.
-
----
+4. Start the frontend:
+   ```bash
+   cd ..
+   npm start
+   ```
 
 ## 🧠 Usage
 
-1. **Load Questions**
-   - Upload a `.json` or `.csv` file containing your quiz deck.
-   - Or upload a `.pdf` slide deck to generate questions automatically with ChatGPT.
+1. Open `http://localhost:3000`.
+2. Upload your slides or JSON question deck.
+3. Choose a GPT model and (optionally) target number of questions.
+4. Watch as iQuiz generates questions in real-time.
+5. Review, flag, and retake quizzes in different modes.
 
-2. **Choose a Mode**
-   - **Quiz:** Multiple-choice questions with instant feedback.
-   - **Short Answer:** Type your answer and check correctness.
-   - **Flashcard:** Simple front/back mode for rapid review.
-
-3. **Navigate & Review**
-   - Use the **Previous** and **Next** buttons, or ← / → keys.
-   - Use the **Jump Bar** to move to any question.
-   - Flag difficult questions and optionally review flagged only.
-
-4. **Save or Export**
-   - Download all questions in JSON format for backup or reuse.
-
----
-
-## 🗂 JSON Format Example
-
-Here’s the expected structure for your JSON file:
-
-```json
-{
-  "items": [
-    {
-      "question": "What does REST stand for?",
-      "answer": "Representational State Transfer",
-      "choices": ["Random", "Representational State Transfer", "Stateful"],
-      "explanation": "An architectural style for web APIs.",
-      "tags": ["web", "apis"]
-    }
-  ]
-}
+## 📦 Folder Structure
 ```
-
-You can also load a plain array of question objects without the `items` wrapper.
-
----
-
-## ⚙️ Environment Setup
-
-Create a `.env` file in your `/server` directory with your OpenAI API key:
-
-```bash
-OPENAI_API_KEY=your_api_key_here
-PORT=5050
+/server
+  index.js             # Express + OpenAI backend
+/src
+  /components          # React UI components (Header, ControlsBar, etc.)
+  QuizApp.js           # Main quiz logic
+  index.js, index.css  # React entry points
 ```
-
----
-
-## 🧩 Developer Notes
-
-- The app uses `compression` middleware for faster JSON responses.
-- Large decks are auto-windowed in the jump bar to avoid performance drops.
-- Keyboard and scroll behavior are synchronized to keep the active question visible.
-
----
-
-## 💡 Future Improvements
-
-- Persistent user progress with localStorage
-- Question categories and timed quiz mode
-- Import/export to Google Drive
-- Cloud deployment on AWS or Vercel
-
----
-
-## 🧑‍💻 Author
-
-**Hao Liu**  
-Senior Computer Science Student @ Texas A&M University  
-Passionate about AI, data visualization, and educational tech tools.
-
----
 
 ## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
+MIT License.
