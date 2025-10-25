@@ -106,7 +106,7 @@ export default function QuizApp() {
   useEffect(() => {
     function handleKey(e) {
       if (busy) return;
-      if (e.key === "ArrowRight") {
+      if (e.key === "ArrowRight" && !(idx >= visible.length - 1)) {
         setIdx((i) => Math.min(i + 1, visible.length - 1));
         setShow(false);
         setTyped("");
@@ -115,7 +115,7 @@ export default function QuizApp() {
           shortAnswerCorrect: null,
           isChoiceCorrect: null,
         });
-      } else if (e.key === "ArrowLeft") {
+      } else if (e.key === "ArrowLeft" && !(idx === 0)) {
         setIdx((i) => Math.max(i - 1, 0));
         setShow(false);
         setTyped("");
@@ -128,7 +128,7 @@ export default function QuizApp() {
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [busy, visible.length]);
+  }, [busy, visible.length, idx]);
 
   // helper
   function centerChildInScroller(container, el, smooth = true) {
@@ -298,11 +298,14 @@ export default function QuizApp() {
       }));
     }
   }
-  
+
   async function generateFromPdfStream(slides) {
     const payloadTarget = Number(targetCount) || undefined;
     const payloadModel = model; // from state
-    console.log("📦 Streaming request payload:", { model: payloadModel, target: payloadTarget });
+    console.log("📦 Streaming request payload:", {
+      model: payloadModel,
+      target: payloadTarget,
+    });
     // Coerce `slides` to a non-empty array of strings. If a File (PDF) was passed, extract text here.
     setBusy(true);
     setDeck([]); // clear existing deck
@@ -343,7 +346,11 @@ export default function QuizApp() {
           "Content-Type": "application/json",
           Accept: "text/event-stream",
         },
-        body: JSON.stringify({ slides: slideArr, model: payloadModel, target: payloadTarget }),
+        body: JSON.stringify({
+          slides: slideArr,
+          model: payloadModel,
+          target: payloadTarget,
+        }),
       });
 
       // If HTTP failed, surface details
@@ -363,7 +370,11 @@ export default function QuizApp() {
           method: "POST",
           mode: "cors",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ slides: slideArr, model: payloadModel, target: payloadTarget }),
+          body: JSON.stringify({
+            slides: slideArr,
+            model: payloadModel,
+            target: payloadTarget,
+          }),
         });
         if (!fallback.ok) {
           const t = await fallback.text().catch(() => "");
