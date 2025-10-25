@@ -2,8 +2,8 @@ export default function LoadQuestions({ loadFromText, busy, fileRef , onFile}) {
   return (
     
             <div className="rounded-2xl border bg-white p-4 space-y-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <label>Import questions (JSON)</label>
+              <div className="flex flex-wrap items-center gap-3 text-sm">
+                <label className="font-bold">Load Questions from JSON</label>
                 <input
                   type="file"
                   ref={fileRef}

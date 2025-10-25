@@ -3,7 +3,7 @@ export default function ControlsBar({
   tags, filterTag, setFilterTag, setIdx,
   setSelectedChoice, setIsChoiceCorrect, setShow, setTyped, setShortAnswer,
   currentId, isCurrentFlagged, toggleFlag,
-  flaggedOnly, setFlaggedOnly, downloadDeckJSON, deck
+  flaggedOnly, setFlaggedOnly, downloadDeckJSON, deck, resetQuiz
 }) {
     return (
         <div className="flex flex-wrap items-center gap-4 mb-2 justify-start">
@@ -50,7 +50,7 @@ export default function ControlsBar({
               }}
               disabled={busy}
             />
-            Flagged only
+            Flagged
           </label>
           <label className="flex items-center gap-2 text-sm">
             Mode:
@@ -92,6 +92,17 @@ export default function ControlsBar({
               <option value="flash">Flashcard</option>
             </select>
           </label>
+          
+          <button
+              className="px-3 py-1.5 rounded-lg border text-sm"
+              onClick={() => {
+                resetQuiz();
+              }}
+              disabled={busy || deck.length === 0}
+            >
+              Retake
+          </button>
+          
 
           <button
             type="button"

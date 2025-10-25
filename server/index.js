@@ -33,7 +33,7 @@ Return STRICT JSON following this schema:
   "items": [
     {
       "question": "string",
-      "answer": 0,                     // for TF, use 0 or 1, for MCQ use the index of the correct choice in choices[]
+      "answer": 0,                     // for TF, use 0 for True 1 for False, for MCQ use the index of the correct choice in choices[]
       "choices": ["string", "string", ...],   // required for MCQ (3-4 choices), T/F for True/False questions
       "explanation": "string",                // optional
       "tags": ["string", ...]                
@@ -58,7 +58,15 @@ Rules:
 
 app.post("/generate-quiz", async (req, res) => {
   try {
-    const { slides } = req.body; // array of slide strings
+    const { slides, model, target } = req.body;
+    const ALLOWED_MODELS = new Set([
+      "gpt-5-nano",
+      "gpt-5-mini",
+      "gpt-5",
+      "gpt-4o-mini",
+    ]);
+    const modelToUse = ALLOWED_MODELS.has(model) ? model : "gpt-5-nano";
+    console.log(`🧠 Using OpenAI model: ${modelToUse}`);
     if (!Array.isArray(slides) || !slides.length) {
       return res.status(400).json({ error: "slides[] required" });
     }
@@ -67,20 +75,28 @@ app.post("/generate-quiz", async (req, res) => {
     const allItems = [];
 
     for (const group of chunks) {
+      const extra = Number(target)
+        ? `Generate ${Math.floor(target)} total questions.`
+        : "";
+
       const user = [
         { type: "text", text: "Slides text:\n" + group.join("\n---\n") },
-        { type: "text", text: "Produce JSON now." },
+        { type: "text", text: `Produce JSON now. ${extra}` },
       ];
 
       // Use Chat Completions (works broadly). You can swap to Responses API if you prefer.
+      console.log("🚀 Sending request to OpenAI:");
+      console.log(
+        "Prompt preview:",
+        user.map((m) => m.text || "").join("\n---\n")
+      );
       const resp = await openai.chat.completions.create({
-        model: "gpt-4o-mini", // economical, good quality; pick a model you have access to
+        model: modelToUse,
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: SYSTEM },
           { role: "user", content: user },
         ],
-        temperature: 0.3,
       });
       console.log("⬅️ Received response from OpenAI:");
       console.log(resp.choices[0].message.content);
@@ -107,7 +123,7 @@ app.post("/generate-quiz", async (req, res) => {
               answer = idx === 0 ? "True" : "False";
             }
           }
-          return { ...it, answer };
+          return { ...it, answer: String(answer) };
         });
         allItems.push(...processed);
       }

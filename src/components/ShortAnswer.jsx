@@ -27,11 +27,12 @@ export default function ShortAnswer({ typed, setTyped, checkShort, busy, shortAn
                 </div>
 
                 <div
-                  className={`text-sm font-medium ${
+                  className={`text-sm flex font-medium ${
                     shortAnswerCorrect ? "text-green-700" : "text-red-700"
                   }`}
                 >
                   {shortAnswerCorrect === null ? <br/> : shortAnswerCorrect ? "✅ Correct!" : "❌ Not quite — see the correct answer below."}
+                  
                 </div>
 
 
