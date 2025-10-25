@@ -92,7 +92,7 @@ export default function QuizHeader({
                   </li>
                   <li>
                     <strong>Target</strong> (optional): hint the model about how
-                    many questions to generate.
+                    many questions to generate. <em>Note: This is not a strict limit.</em>
                   </li>
                 </ul>
               </section>
