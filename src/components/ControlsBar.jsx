@@ -94,7 +94,7 @@ export default function ControlsBar({
           }}
           disabled={busy}
         >
-          <option value="quiz">Quiz</option>
+          <option value="quiz">MCQ</option>
           <option value="short">Short Answer</option>
           <option value="flash">Flashcard</option>
         </select>
