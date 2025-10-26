@@ -1,11 +1,7 @@
-// src/pdf.js (for pdfjs-dist v4)
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 
-// Point the worker to the bundled module URL (no default export!)
-GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
+// CRA build replaces PUBLIC_URL with the correct base path
+GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.mjs`;
 
 export async function extractPdfText(file) {
   const data = await file.arrayBuffer();
@@ -16,7 +12,8 @@ export async function extractPdfText(file) {
     const page = await pdf.getPage(p);
     const content = await page.getTextContent();
     const text = content.items.map(i => ("str" in i ? i.str : "")).join(" ");
-    pages.push(text.replace(/\s+/g, " ").trim());
+    const cleaned = text.replace(/\s+/g, " ").trim();
+    if (cleaned) pages.push(cleaned);
   }
   return pages;
 }

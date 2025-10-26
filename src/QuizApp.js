@@ -14,6 +14,7 @@ import Answer from "./components/Answer";
 import JumperBar from "./components/JumperBar";
 import MCQ from "./components/MCQ";
 import QuestionBar from "./components/QuestionBar";
+import { API_BASE } from "./configure";
 
 const clean = (s) =>
   (s ?? "")
@@ -382,7 +383,7 @@ export default function QuizApp() {
         type: "info",
         text: `Found ${slideArr.length} slides. Generating quiz questions with OpenAI… It can take a minute or two.`,
       });
-      const resp = await fetch("http://localhost:5050/generate-quiz-stream", {
+      const resp = await fetch(`${API_BASE}/generate-quiz-stream`, {
         method: "POST",
         mode: "cors",
         headers: {
@@ -409,7 +410,7 @@ export default function QuizApp() {
       // Some browsers (notably Safari) don't expose ReadableStream for CORS + event-stream.
       if (!resp.body || typeof resp.body.getReader !== "function") {
         // Fallback to non-streaming endpoint so UX still works
-        const fallback = await fetch("http://localhost:5050/generate-quiz", {
+        const fallback = await fetch(`${API_BASE}/generate-quiz`, {
           method: "POST",
           mode: "cors",
           headers: { "Content-Type": "application/json" },

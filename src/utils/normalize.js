@@ -8,3 +8,6 @@ export function normalize(items) {
     tags: Array.isArray(q.tags) ? q.tags : [],
   }));
 }
+
+
+export const normalizeOne = (q) => normalize([q])[0];
