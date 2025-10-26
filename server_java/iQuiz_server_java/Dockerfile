@@ -13,5 +13,11 @@ RUN set -eux; \
     cp "$JAR_FILE" /app/app.jar
 
 # ✅ VERIFY jar content + manifest during build (shown in Render build logs)
-RUN jar tf /app/app.jar | grep -F "com/aaronzz10/iquiz_server_java/IQuizJavaApplication.class"
-RUN sh -lc 'jar xf /app/app.jar META-INF/MANIFEST.MF && sed -n "1,40p" META-INF/MANIFEST.MF'
+# ✅ DIAGNOSTIC: list jar contents & manifest in build logs
+RUN set -eux; \
+    jar tf /app/app.jar | tee /tmp/jar.txt | sed -n '1,80p'; \
+    echo '--- searching for application class ---'; \
+    grep -F "IQuizJavaApplication.class" /tmp/jar.txt || true; \
+    echo '--- manifest ---'; \
+    jar xf /app/app.jar META-INF/MANIFEST.MF; \
+    sed -n '1,80p' META-INF/MANIFEST.MF || true
