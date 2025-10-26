@@ -17,7 +17,8 @@ public class CorsConfig {
         List<String> allowed = List.of(
                 "http://localhost:3000",
                 "http://localhost:5000",
-                "https://iquiz-1.onrender.com"
+                "https://iquiz-1.onrender.com",
+                "https://iquiz-spring.onrender.com"
         );
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(allowed);
