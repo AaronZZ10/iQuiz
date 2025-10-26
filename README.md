@@ -7,7 +7,7 @@ It allows users to upload their study materials (JSON, CSV, or PDF slides) and a
 
 ## 🚀 Features
 
-- **Upload PDF, JSON, or CSV:** Load class slides or question sets directly.
+- **Upload PDF:** Load class slides or question sets directly.
 - **Automatic Quiz Generation:** Uses OpenAI API to generate questions and answers from your slides.
 - **Model Selection:** Choose between different GPT models for question generation.
 - **Target Question Count:** Specify how many questions to generate.
