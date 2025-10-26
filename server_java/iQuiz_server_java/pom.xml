@@ -96,6 +96,7 @@
                 <configuration>
                     <!-- Make this EXACTLY your @SpringBootApplication FQCN -->
                     <mainClass>com.aaronzz10.iquiz_server_java.IQuizJavaApplication</mainClass>
+                    <classifier>exec</classifier>
                 </configuration>
                 <executions>
                     <execution>
