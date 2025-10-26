@@ -7,21 +7,21 @@ export default function LoadQuestions({
 }) {
   return (
     <div className="rounded-2xl border bg-white p-4 space-y-3">
-      <div className="flex flex-wrap items-center gap-3 text-sm ">
-        <label className="font-bold mr-auto">
+      <div className="flex flex-col items-start sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+        <label className="font-bold flex items-center gap-2">
           Download/Load Questions in JSON
         </label>
 
         <button
           type="button"
-          className="px-3 py-1.5 rounded-lg border text-sm m-auto"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border self-start sm:mx-auto w-auto"
           onClick={downloadDeckJSON}
           disabled={busy || deck.length === 0}
           title="Download all questions as JSON"
         >
           Download Questions
         </button>
-        <div className="ml-auto">
+        <div className="self-start sm:ml-auto">
           <input
             type="file"
             ref={fileRef}
@@ -29,16 +29,13 @@ export default function LoadQuestions({
             accept=".json"
             disabled={busy}
             id="fileQInput"
-            className="hidden" // hide native input
+            className="hidden"
           />
           <label
             htmlFor="fileQInput"
-            className={`px-3 py-2 rounded-lg border cursor-pointer 
-                ${
-                  busy
-                    ? "opacity-50 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-100"
-                }`}
+            className={`inline-flex px-3 py-2 rounded-lg border cursor-pointer self-start
+      ${busy ? "opacity-50 cursor-not-allowed" : "bg-white hover:bg-gray-100"}
+    `}
           >
             📂 Load Questions
           </label>

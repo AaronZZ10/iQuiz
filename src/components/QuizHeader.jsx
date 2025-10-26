@@ -1,8 +1,6 @@
 import { useState } from "react";
 
-export default function QuizHeader({
-  busy,
-}) {
+export default function QuizHeader({ busy }) {
   const [showHelp, setShowHelp] = useState(false);
   return (
     <header className="flex h-10 items-center justify-between gap-4 pt-4">
@@ -23,22 +21,32 @@ export default function QuizHeader({
         </button>
       </div>
 
-      
       {showHelp && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 overflow-y-auto max-h-[90vh]">
-            <h2 className="text-xl font-bold mb-3 text-gray-900">How to Use iQuiz</h2>
+            <div className="flex justify-between items-stretch">
+              <h2 className="flex items-center text-xl font-bold text-gray-900">
+                How to Use iQuiz
+              </h2>
+              <button
+                type="button"
+                className="px-4 py-1 h-full rounded-lg border bg-red-500 hover:bg-red-400 text-white"
+                onClick={() => setShowHelp(false)}
+              >
+                Close
+              </button>
+            </div>
 
             <div className="space-y-4 text-sm text-gray-800">
               <section>
                 <h3 className="font-semibold mb-1">Load Questions</h3>
                 <ul className="list-disc list-inside space-y-1">
                   <li>
-                    <strong>Upload PDF slides</strong> to auto-generate questions
-                    with OpenAI.
+                    <strong>Upload PDF slides</strong> to auto-generate
+                    questions with OpenAI.
                   </li>
                   <li>
-                    Import questions via <strong>JSON/CSV</strong>.
+                    Import questions via <strong>JSON</strong>.
                     <div className="mt-1">
                       JSON accepts either a plain array or an object with{" "}
                       <code className="bg-gray-50 px-1 rounded border">
@@ -46,15 +54,7 @@ export default function QuizHeader({
                       </code>
                       :
                     </div>
-                    <pre className="mt-1 rounded bg-gray-50 border p-2 text-xs overflow-auto">{`[{ "question": "...", "answer": "...", "choices": ["A","B","C","D"], "explanation": "", "tags": ["tag"] }]`}</pre>
-                    <pre className="mt-1 rounded bg-gray-50 border p-2 text-xs overflow-auto">{`{ "items": [ { "question": "...", "answer": "..." } ] }`}</pre>
-                    <div className="mt-1">
-                      CSV columns:{" "}
-                      <code className="bg-gray-50 px-1 rounded border">
-                        question,answer,choices,explanation,tags
-                      </code>{" "}
-                      (choices split by <code>|</code>).
-                    </div>
+                    <pre className="mt-1 rounded bg-gray-50 border p-2 text-xs overflow-auto">{`{ "items": [{ "question": "...", "answer": "...", "choices": ["A","B","C","D"], "explanation": "", "tags": ["tag"] }]}`}</pre>
                   </li>
                 </ul>
               </section>
@@ -63,12 +63,14 @@ export default function QuizHeader({
                 <h3 className="font-semibold mb-1">Generation Options</h3>
                 <ul className="list-disc list-inside space-y-1">
                   <li>
-                    <strong>Model</strong>: pick the OpenAI model used to generate
-                    questions. (Higher-capacity models yield better results but will take longer times and cost more.)
+                    <strong>Model</strong>: pick the OpenAI model used to
+                    generate questions. (Higher-capacity models yield better
+                    results but will take longer times and cost more.)
                   </li>
                   <li>
-                    <strong>Target</strong> (optional): hint the model about how
-                    many questions to generate. <em>Note: This is not a strict limit.</em>
+                    <strong>Target</strong> (optional): hint the model about
+                    target number of questions.{" "}
+                    <em>Note: Not a strict limit.</em>
                   </li>
                 </ul>
               </section>
@@ -84,7 +86,8 @@ export default function QuizHeader({
                     <kbd>Enter</kbd> or click <em>Check</em>.
                   </li>
                   <li>
-                    <strong>Flashcard</strong>: lightweight recall view. Always reveals the answer.
+                    <strong>Flashcard</strong>: lightweight recall view. Always
+                    reveals the answer.
                   </li>
                 </ul>
               </section>
@@ -114,11 +117,26 @@ export default function QuizHeader({
                 <h3 className="font-semibold mb-1">Save &amp; Export</h3>
                 <ul className="list-disc list-inside space-y-1">
                   <li>
-                    Selections in Quiz mode and attempts in Short Answer mode are
-                    saved while you navigate.
+                    Selections in Quiz mode and attempts in Short Answer mode
+                    are saved while you navigate.
                   </li>
                   <li>
-                    Use <strong>Download JSON</strong> to export the current deck.
+                    Use <strong>Download JSON</strong> to export the current
+                    deck.
+                  </li>
+                </ul>
+              </section>
+
+              <section>
+                <h3 className="font-semibold mb-1">Session Controls</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>
+                    <strong>Retry</strong>: clears your selections/typed answers
+                    and <em>re-shuffles choices</em> for the current deck.
+                  </li>
+                  <li>
+                    <strong>Clear</strong>: removes <em>all questions</em> and
+                    resets your progress to an empty state.
                   </li>
                 </ul>
               </section>
@@ -127,26 +145,17 @@ export default function QuizHeader({
                 <h3 className="font-semibold mb-1">Developer Shortcuts</h3>
                 <ul className="list-disc list-inside space-y-1">
                   <li>
-                    <strong>Load Demo Quiz</strong>: press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>1</kbd> (Windows/Linux) or <kbd>⌘</kbd> + <kbd>1</kbd> (macOS).
+                    <strong>Load Demo Quiz</strong>: press <kbd>⌘</kbd> + {" "}
+                    <kbd>K</kbd> (macOS) or <kbd>Ctrl</kbd> + <kbd>K</kbd> (Win/Linux).
                   </li>
                 </ul>
               </section>
             </div>
 
-            <div className="mt-5 flex justify-end">
-              <button
-                type="button"
-                className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100"
-                onClick={() => setShowHelp(false)}
-              >
-                Close
-              </button>
-            </div>
+            <div className="mt-5 flex justify-end"></div>
           </div>
         </div>
       )}
-
-      
     </header>
   );
 }

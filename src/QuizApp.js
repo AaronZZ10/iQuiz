@@ -179,7 +179,6 @@ export default function QuizApp() {
     const activeButton = container.querySelector(".jump-active");
     if (!activeButton) return;
 
-    // Wait a tick so layout reflects any new render/size changes
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -226,12 +225,12 @@ export default function QuizApp() {
     }
   }, [current?.id, savedChoices]);
 
-  // Dev-only shortcut: Ctrl+Alt+1 (Win/Linux) or Cmd+1 (macOS) to load demo quiz
+  // Dev-only shortcut: Ctrl+K (Win/Linux) or Cmd+K (macOS) to load demo quiz
   useEffect(() => {
     function onDevShortcut(e) {
-      const isOne = e.key === "1";
-      const macCombo = e.metaKey && isOne; // Cmd+1
-      const winCombo = e.ctrlKey && e.altKey && isOne; // Ctrl+Alt+1
+      const isK = e.key.toLowerCase() === "k";
+      const macCombo = e.metaKey && isK; // Cmd+K
+      const winCombo = e.ctrlKey && isK; // Ctrl+K
       if (macCombo || winCombo) {
         e.preventDefault();
         if (busy) return;
