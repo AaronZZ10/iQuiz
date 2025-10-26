@@ -3,7 +3,7 @@
 iQuiz is a web-based intelligent quiz generator and reviewer built with React, TailwindCSS, and Node.js.  
 It allows users to upload their study materials (JSON, CSV, or PDF slides) and automatically generate review questions using OpenAI models.
 
-🌐 **Live Demo:** [https://iquiz-oz01.onrender.com](https://iquiz-oz01.onrender.com)
+🌐 **Live Demo:** [Link](https://iquiz-1.onrender.com)
 
 ## 🚀 Features
 
@@ -33,17 +33,20 @@ It allows users to upload their study materials (JSON, CSV, or PDF slides) and a
 ## ⚙️ Setup
 
 1. Clone the repo:
+
    ```bash
    git clone https://github.com/yourusername/iQuiz.git
    cd iQuiz
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Start the backend:
+
    ```bash
    cd server
    node index.js
@@ -64,6 +67,7 @@ It allows users to upload their study materials (JSON, CSV, or PDF slides) and a
 5. Review, flag, and retake quizzes in different modes.
 
 ## 📦 Folder Structure
+
 ```
 /server
   index.js             # Express + OpenAI backend
@@ -74,4 +78,5 @@ It allows users to upload their study materials (JSON, CSV, or PDF slides) and a
 ```
 
 ## 📄 License
+
 MIT License.
