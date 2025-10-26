@@ -74,7 +74,7 @@ export default function UploadPDF({
       ${busy ? "opacity-50 cursor-not-allowed" : "bg-white hover:bg-gray-100"}
     `}
         >
-          📂 Upload PDF File
+          ⬆️ Upload PDF File
         </label>
       </div>
     </div>
