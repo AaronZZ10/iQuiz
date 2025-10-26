@@ -273,3 +273,5 @@ const port = process.env.PORT || 5050;
 app.listen(port, () =>
   console.log(`Quiz generator API on http://localhost:${port}`)
 );
+
+app.get("/health", (_, res) => res.status(200).send("ok"));
