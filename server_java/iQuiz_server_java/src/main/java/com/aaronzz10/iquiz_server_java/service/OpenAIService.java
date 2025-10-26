@@ -93,7 +93,7 @@ public class OpenAIService {
                 .body(BodyInserters.fromValue(payload))
                 .retrieve()
                 .bodyToMono(JsonNode.class)
-                .map(resp -> {
+                .handle((resp, sink) -> {
                     String content = resp.path("choices").path(0).path("message").path("content").asText("");
                     try {
                         JsonNode json = om.readTree(content);
@@ -105,9 +105,9 @@ public class OpenAIService {
                             }
                         }
                         // dedupe by question text
-                        return dedupe(items);
+                        sink.next(dedupe(items));
                     } catch (Exception e) {
-                        throw new RuntimeException("Bad JSON from OpenAI: " + e.getMessage());
+                        sink.error(new RuntimeException("Bad JSON from OpenAI: " + e.getMessage()));
                     }
                 });
     }
