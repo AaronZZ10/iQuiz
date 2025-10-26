@@ -40,7 +40,7 @@ export default function ControlsBar({
               setTyped("");
               setIdx(0);
             }}
-            disabled={busy}
+            disabled={busy||tags.length === 0||deck.length === 0}
           >
             {tags.map((t) => (
               <option key={t} value={t}>
