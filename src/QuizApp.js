@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import { extractPdfText } from "./utils/pdf";
 import demoDeck from "./utils/demoDeck";
 import { parseCSV } from "./utils/csv";
@@ -8,16 +8,20 @@ import Nav from "./components/Nav";
 import StatusBanner from "./components/StatusBanner";
 import LoadQuestions from "./components/LoadQuestions";
 import UploadPDF from "./components/UploadPDF";
-import QuizHeader from "./components/Header";
+import QuizHeader from "./components/QuizHeader";
 import ShortAnswer from "./components/ShortAnswer";
 import Answer from "./components/Answer";
+import JumperBar from "./components/JumperBar";
+import MCQ from "./components/MCQ";
+import QuestionBar from "./components/QuestionBar";
 
-const norm = (s) => (s ?? "").toString().trim().toLowerCase();
 const clean = (s) =>
   (s ?? "")
     .toString()
+    .normalize("NFKD")
+    .replace(/\p{Diacritic}/gu, "")
     .toLowerCase()
-    .replace(/[^a-z0-9 ]/g, "")
+    .replace(/[^a-z0-9 ]/g, " ")
     .replace(/\b(the|a|an)\b/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -103,32 +107,46 @@ export default function QuizApp() {
     return d.length ? d : deck;
   }, [deck, filterTag, flaggedOnly, flaggedIds]);
 
-  useEffect(() => {
-    function handleKey(e) {
+  const handleKey = useCallback(
+    (e) => {
       if (busy) return;
-      if (e.key === "ArrowRight" && !(idx >= visible.length - 1)) {
+      if (e.key === "ArrowRight" && idx < visible.length - 1) {
         setIdx((i) => Math.min(i + 1, visible.length - 1));
         setShow(false);
         setTyped("");
-        setQuizState({
+        setQuizState((s) => ({
+          ...s,
           selectedChoice: null,
           shortAnswerCorrect: null,
           isChoiceCorrect: null,
-        });
-      } else if (e.key === "ArrowLeft" && !(idx === 0)) {
+        }));
+      } else if (e.key === "ArrowLeft" && idx > 0) {
         setIdx((i) => Math.max(i - 1, 0));
         setShow(false);
         setTyped("");
-        setQuizState({
+        setQuizState((s) => ({
+          ...s,
           selectedChoice: null,
           shortAnswerCorrect: null,
           isChoiceCorrect: null,
-        });
+        }));
       }
-    }
+    },
+    [busy, idx, visible.length]
+  );
+
+  const controllerRef = useRef(null);
+  useEffect(() => () => controllerRef.current?.abort(), []);
+
+  useEffect(() => {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [busy, visible.length, idx]);
+  }, [handleKey]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    return () => controller.abort();
+  }, []);
 
   // helper
   function centerChildInScroller(container, el, smooth = true) {
@@ -240,6 +258,8 @@ export default function QuizApp() {
       return next;
     });
   }
+
+  const normalizeOne = (q) => normalize([q])[0];
 
   function resetQuiz() {
     setShow(false);
@@ -453,7 +473,8 @@ export default function QuizApp() {
           try {
             const payload = JSON.parse(dataRaw);
             if (event === "item") {
-              setDeck((d) => normalize([...d, payload.item]));
+              const normItem = normalizeOne(payload.item);
+              setDeck((d) => [...d, normItem]);
             } else if (event === "done") {
               setBusy(false);
               setStatusMsg({
@@ -469,7 +490,6 @@ export default function QuizApp() {
             }
           } catch (e) {
             // Ignore parse errors from partial frames; keep buffering
-            // Optionally log: console.debug("SSE parse issue:", e, { event, dataRaw });
           }
         }
       }
@@ -484,7 +504,7 @@ export default function QuizApp() {
       <div className="max-w-4xl mx-auto p-6 space-y-6">
         <QuizHeader busy={busy} />
 
-        <div className="relative h-2 mt-0.5 mb-0">
+        <div className="relative h-2 mt-0.5 mb-0" aria-live="polite">
           {statusMsg && <StatusBanner statusMsg={statusMsg} busy={busy} />}
         </div>
 
@@ -552,167 +572,48 @@ export default function QuizApp() {
           {/* Top toolbar */}
           {current ? (
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider opacity-70">
-                <span>
-                  Question {idx + 1} / {visible.length}
-                  {filterTag ? ` (tag: ${filterTag})` : ""}
-                </span>
+              <QuestionBar
+                current={current}
+                busy={busy}
+                visible={visible}
+                idx={idx}
+                filterTag={filterTag}
+                toggleFlag={toggleFlag}
+                isCurrentFlagged={isCurrentFlagged}
+              />
 
-                <button
-                  type="button"
-                  className={
-                    "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] border " +
-                    (isCurrentFlagged
-                      ? "bg-yellow-100 text-yellow-800 border-yellow-300"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50")
-                  }
-                  onClick={() => current && toggleFlag(current.id)}
-                  disabled={busy || !current}
-                  title={
-                    isCurrentFlagged
-                      ? "Unflag this question"
-                      : "Flag this question"
-                  }
-                  aria-pressed={isCurrentFlagged ? "true" : "false"}
-                >
-                  {isCurrentFlagged ? "★ Flagged" : "☆ Flag"}
-                </button>
-              </div>
               <h2 className="text-2xl font-semibold min-h-[4rem]">
                 {current.question}
               </h2>
 
               {/* Jump bar (scrollable, non-wrapping) */}
-              <div className="flex items-center gap-2">
-                {/* <button
-                  type="button"
-                  className="px-2 py-1 text-xs rounded border bg-white hover:bg-gray-100 disabled:opacity-50"
-                  onClick={() =>
-                    jumpRef.current?.scrollBy({
-                      left: -240,
-                      behavior: "smooth",
-                    })
-                  }
-                  disabled={busy}
-                  aria-label="Scroll left"
-                  title="Scroll left"
-                >
-                  ◀
-                </button> */}
+              <JumperBar
+                visible={visible}
+                idx={idx}
+                setIdx={setIdx}
+                busy={busy}
+                setShow={setShow}
+                setQuizState={setQuizState}
+                jumpRef={jumpRef}
+                flaggedIds={flaggedIds}
+              />
 
-                <div
-                  ref={jumpRef}
-                  className="overflow-x-auto pb-3"
-                  style={{ scrollbarGutter: "stable" }}
-                >
-                  <div className="flex flex-nowrap whitespace-nowrap gap-1 py-1">
-                    {visible.map((q, i) => {
-                      const isActive = i === idx;
-                      const isFlagged = flaggedIds.has(q.id);
-                      let cls = "px-2 py-1 text-xs rounded border shrink-0";
-                      if (isActive)
-                        cls +=
-                          " ring-2 ring-blue-400 border-blue-400 jump-active";
-                      if (isFlagged) cls += " bg-yellow-100 border-yellow-300";
-                      else cls += " bg-white";
-
-                      return (
-                        <button
-                          key={q.id ?? i}
-                          className={cls}
-                          onClick={(e) => {
-                            setIdx(i);
-                            setShow(false);
-                            setQuizState({
-                              selectedChoice: null,
-                              shortAnswerCorrect: null,
-                              isChoiceCorrect: null,
-                            });
-                            e.currentTarget.blur();
-                          }}
-                          title={`Go to question ${i + 1}${
-                            isFlagged ? " (flagged)" : ""
-                          }`}
-                          disabled={busy}
-                        >
-                          {i + 1}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* <button
-                  type="button"
-                  className="px-2 py-1 text-xs rounded border bg-white hover:bg-gray-100 disabled:opacity-50"
-                  onClick={() =>
-                    jumpRef.current?.scrollBy({ left: 240, behavior: "smooth" })
-                  }
-                  disabled={busy}
-                  aria-label="Scroll right"
-                  title="Scroll right"
-                >
-                  ▶
-                </button> */}
-              </div>
-
-              {!shortMode && !flashMode && current.choices?.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {(() => {
-                    const answerNorm = norm(current.answer);
-                    return current.choices.map((c, i) => {
-                      const isChosen = selectedChoice === c;
-                      const isCorrect = norm(c) === answerNorm;
-
-                      let cls = "text-left p-3 rounded-xl border hover:shadow";
-                      if (selectedChoice !== null) {
-                        if (isCorrect && isChosen)
-                          cls += " border-green-500 bg-green-50";
-                        if (!isCorrect && isChosen)
-                          cls += " border-red-500 bg-red-50";
-                      }
-
-                      return (
-                        <button
-                          key={i}
-                          className={cls}
-                          disabled={busy}
-                          onClick={(e) => {
-                            e.currentTarget.blur();
-                            setQuizState({
-                              selectedChoice: c,
-                              isChoiceCorrect: isCorrect,
-                              shortAnswerCorrect,
-                            });
-                            if (current?.id != null) {
-                              setSavedChoices((prev) => ({
-                                ...prev,
-                                [current.id]: { choice: c, correct: isCorrect },
-                              }));
-                            }
-                            setShow(!isCorrect);
-                          }}
-                        >
-                          {c}
-                        </button>
-                      );
-                    });
-                  })()}
-                </div>
+              {/* MCQ */}
+              {!shortMode && !flashMode && (
+                <MCQ
+                  {...{
+                    current,
+                    selectedChoice,
+                    isChoiceCorrect,
+                    busy,
+                    setQuizState,
+                    setSavedChoices,
+                    setShow,
+                  }}
+                />
               )}
 
-              <div className="text-sm font-medium">
-                {selectedChoice === null ? (
-                  <br />
-                ) : isChoiceCorrect ? (
-                  <span className="text-green-700">✅ Correct!</span>
-                ) : (
-                  <span className="text-red-700">
-                    ❌ Not quite — see the correct answer below.
-                  </span>
-                )}
-              </div>
-
+              {/** Short Answer */}
               {shortMode && (
                 <ShortAnswer
                   {...{
@@ -721,8 +622,8 @@ export default function QuizApp() {
                     answer: current.answer,
                     busy,
                     shortAnswerCorrect,
+                    checkShort,
                   }}
-                  checkShort={checkShort}
                 />
               )}
 

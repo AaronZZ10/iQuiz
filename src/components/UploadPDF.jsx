@@ -47,7 +47,7 @@ export default function UploadPDF({
 
         <input
           type="file"
-          accept=".pdf"
+          accept=".pdf, application/pdf"
           disabled={busy}
           id="fileInput"
           onChange={async (e) => {
