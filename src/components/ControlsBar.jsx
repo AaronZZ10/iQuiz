@@ -107,7 +107,7 @@ export default function ControlsBar({
         }}
         disabled={busy || deck.length === 0}
       >
-        Retry
+         🔄 Retry
       </button>
 
       <button

@@ -4,10 +4,15 @@ import cors from "cors";
 import OpenAI from "openai";
 
 const app = express();
-app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+const allowed = [
+  "https://iquiz-oz01.onrender.com",
+  "http://localhost:3000" 
+];
+app.use(cors({ origin: allowed }));
 
 // Simple chunking to keep prompts reasonable
 function chunkSlides(slides, maxChars = 7000) {
