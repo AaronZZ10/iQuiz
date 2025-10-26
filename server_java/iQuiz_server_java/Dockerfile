@@ -9,8 +9,9 @@ RUN set -eux; \
     echo '--- CWD & listing ---'; pwd; ls -la; \
     echo '--- Has pom.xml? ---'; [ -f pom.xml ] && echo YES || (echo NO && exit 1); \
     echo '--- Java sources present? (first 40) ---'; find src/main/java -type f | sed -n '1,40p'; \
-    echo '--- Expecting main class path ---'; echo src/main/java/com/aaronzz10/iquiz_server_java/IQuizJavaApplication.java; \
-    [ -f src/main/java/com/aaronzz10/iquiz_server_java/IQuizJavaApplication.java ] || (echo 'Missing main class file!' && exit 1)
+    echo '--- Searching for IQuizJavaApplication.java ---'; \
+    MAIN_CLASS=$(find src/main/java -name IQuizJavaApplication.java | head -n 1); \
+    if [ -z "$MAIN_CLASS" ]; then echo '❌ Missing main class file!'; exit 1; else echo "✅ Found main class at: $MAIN_CLASS"; fi
 RUN mvn -q -DskipTests clean package spring-boot:repackage
 
 # copy the exec jar to a fixed name
