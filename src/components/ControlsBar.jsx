@@ -92,7 +92,7 @@ export default function ControlsBar({
               resetState();
             }
           }}
-          disabled={busy}
+          disabled={busy || deck.length === 0}
         >
           <option value="quiz">MCQ</option>
           <option value="short">Short Answer</option>
