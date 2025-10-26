@@ -238,7 +238,10 @@ export default function QuizApp() {
           const items = normalize(demoDeck);
           setDeck(items);
           resetQuiz();
-          setStatusMsg({ type: "info", text: "Loaded demo quiz with 30 questions." });
+          setStatusMsg({
+            type: "info",
+            text: "Loaded demo quiz with 30 questions.",
+          });
         } catch (err) {
           setStatusMsg({ type: "error", text: "Failed to load demo quiz." });
         }
@@ -258,8 +261,6 @@ export default function QuizApp() {
       return next;
     });
   }
-
-  const normalizeOne = (q) => normalize([q])[0];
 
   function resetQuiz() {
     setShow(false);
@@ -473,8 +474,7 @@ export default function QuizApp() {
           try {
             const payload = JSON.parse(dataRaw);
             if (event === "item") {
-              const normItem = normalizeOne(payload.item);
-              setDeck((d) => [...d, normItem]);
+              setDeck((d) => normalize([...d, payload.item]));
             } else if (event === "done") {
               setBusy(false);
               setStatusMsg({
