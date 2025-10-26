@@ -238,7 +238,7 @@ export default function QuizApp() {
           const items = normalize(demoDeck);
           setDeck(items);
           resetQuiz();
-          setStatusMsg({ type: "info", text: "Loaded demo quiz." });
+          setStatusMsg({ type: "info", text: "Loaded demo quiz with 30 questions." });
         } catch (err) {
           setStatusMsg({ type: "error", text: "Failed to load demo quiz." });
         }
