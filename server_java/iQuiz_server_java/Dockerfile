@@ -4,6 +4,13 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn -q -e -DskipTests dependency:go-offline
 COPY src ./src
+# 🔎 Verify build context and sources exist (printed in Render build logs)
+RUN set -eux; \
+    echo '--- CWD & listing ---'; pwd; ls -la; \
+    echo '--- Has pom.xml? ---'; [ -f pom.xml ] && echo YES || (echo NO && exit 1); \
+    echo '--- Java sources present? (first 40) ---'; find src/main/java -type f | sed -n '1,40p'; \
+    echo '--- Expecting main class path ---'; echo src/main/java/com/aaronzz10/iquiz_server_java/IQuizJavaApplication.java; \
+    [ -f src/main/java/com/aaronzz10/iquiz_server_java/IQuizJavaApplication.java ] || (echo 'Missing main class file!' && exit 1)
 RUN mvn -q -DskipTests clean package spring-boot:repackage
 
 # copy the exec jar to a fixed name
@@ -12,15 +19,14 @@ RUN set -eux; \
     echo "Using $JAR_FILE"; \
     cp "$JAR_FILE" /app/app.jar
 
-# ✅ VERIFY jar content + manifest during build (shown in Render build logs)
-# ✅ DIAGNOSTIC: list jar contents & manifest in build logs
+# ✅ DIAGNOSTIC: list jar contents & manifest in build logs (deeper)
 RUN set -eux; \
-    jar tf /app/app.jar | tee /tmp/jar.txt | sed -n '1,80p'; \
-    echo '--- searching for application class ---'; \
-    grep -F "IQuizJavaApplication.class" /tmp/jar.txt || true; \
+    jar tf /app/app.jar | tee /tmp/jar.txt | sed -n '1,200p'; \
+    echo '--- searching for application class (full path) ---'; \
+    grep -F 'BOOT-INF/classes/com/aaronzz10/iquiz_server_java/IQuizJavaApplication.class' /tmp/jar.txt || true; \
     echo '--- manifest ---'; \
     jar xf /app/app.jar META-INF/MANIFEST.MF; \
-    sed -n '1,80p' META-INF/MANIFEST.MF || true
+    sed -n '1,120p' META-INF/MANIFEST.MF || true
 
 # ---- Run stage ----
 FROM eclipse-temurin:17-jre
