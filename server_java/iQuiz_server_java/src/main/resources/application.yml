@@ -1,0 +1,6 @@
+server:
+  port: ${PORT:5050}
+
+openai:
+  base-url: https://api.openai.com/v1
+  api-key: ${OPENAI_API_KEY:}
