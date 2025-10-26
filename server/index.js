@@ -9,7 +9,7 @@ app.use(express.json({ limit: "10mb" }));
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const allowed = [
-  "https://iquiz-1.onrender.com/",
+  "https://iquiz-1.onrender.com",
   "http://localhost:3000" 
 ];
 app.use(cors({ origin: allowed }));
