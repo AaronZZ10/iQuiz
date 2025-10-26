@@ -24,7 +24,7 @@ export default function ControlsBar({
   setShowConfirm,
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-4 mb-2 justify-start">
+    <div className="flex flex-wrap items-center gap-4 mb-2 justify-between">
       <div>
         <label className="flex items-center gap-2 text-sm whitespace-nowrap">
           Tag:
@@ -51,7 +51,7 @@ export default function ControlsBar({
         </label>
       </div>
 
-      <label className="flex items-center gap-2 text-sm ml-auto">
+      <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
           checked={!!flaggedOnly}
@@ -63,7 +63,7 @@ export default function ControlsBar({
         />
         Flagged only
       </label>
-      <label className="flex items-center gap-2 text-sm ml">
+      <label className="flex items-center gap-2 text-sm">
         Mode:
         <select
           className="px-2 py-1 rounded border"
@@ -107,11 +107,11 @@ export default function ControlsBar({
         }}
         disabled={busy || deck.length === 0}
       >
-         🔄 Retry
+        🔄 Retry
       </button>
 
       <button
-        className="px-3 py-1.5 rounded-lg border text-sm ml"
+        className="px-3 py-1.5 rounded-lg border text-sm"
         onClick={() => setShowConfirm(true)}
         disabled={busy || deck.length === 0}
       >
@@ -135,7 +135,7 @@ export default function ControlsBar({
                   setShowConfirm(false);
                   setDeck([]);
                   resetQuiz();
-                  setStatusMsg(null)
+                  setStatusMsg(null);
                 }}
               >
                 Confirm

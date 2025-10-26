@@ -3,6 +3,8 @@
 iQuiz is a web-based intelligent quiz generator and reviewer built with React, TailwindCSS, and Node.js.  
 It allows users to upload their study materials (JSON, CSV, or PDF slides) and automatically generate review questions using OpenAI models.
 
+🌐 **Live Demo:** [https://iquiz-oz01.onrender.com](https://iquiz-oz01.onrender.com)
+
 ## 🚀 Features
 
 - **Upload PDF, JSON, or CSV:** Load class slides or question sets directly.
