@@ -21,3 +21,20 @@ RUN set -eux; \
     echo '--- manifest ---'; \
     jar xf /app/app.jar META-INF/MANIFEST.MF; \
     sed -n '1,80p' META-INF/MANIFEST.MF || true
+
+# ---- Run stage ----
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+
+# Copy the bootable jar from build stage
+COPY --from=build /app/app.jar /app/app.jar
+
+# Optional JVM defaults (picked up automatically by Java)
+ENV JAVA_TOOL_OPTIONS="-Xms256m -Xmx512m"
+
+# Expose container port (Render injects PORT env; Spring maps server.port from it)
+EXPOSE 8080
+
+# Use exec-form to avoid shell/env expansion issues on Render
+ENTRYPOINT ["java"]
+CMD ["-jar", "/app/app.jar"]
