@@ -27,6 +27,35 @@ function chunkSlides(slides, maxChars = 7000) {
   return chunks;
 }
 
+const SYSTEM = `You generate exam-style questions from slide text.
+Return STRICT JSON following this schema:
+{
+  "items": [
+    {
+      "question": "string",
+      "answer": 0,                     // for TF, use 0 or 1, for MCQ use the index of the correct choice in choices[]
+      "choices": ["string", "string", ...],   // required for MCQ (3-4 choices), T/F for True/False questions
+      "explanation": "string",                // optional
+      "tags": ["string", ...]                
+    }
+  ]
+}
+for exemple:
+{
+  question: "Which particle carries a negative electric charge?",
+  answer: 2,
+  choices: ["Proton", "Neutron", "Electron", "Positron"],
+  explanation: "Electrons are negatively charged; protons are positive and neutrons are neutral.",
+  tags: ["science"],
+}
+
+Rules:
+- Prefer concise, unambiguous phrasing.
+- MCQ and T/F only. 3-4 choices for MCQ.
+- Focus on definitions, formulas, processes, comparisons, and pitfalls.
+- No external facts; use only provided slides.
+- Keep each question self-contained.`;
+
 const SYSTEM_NDJSON = `You generate exam-style questions from slide text.
 STREAM output as NDJSON (one JSON object per line). Do NOT wrap with an array. Do NOT include any prose before/after.
 Each line must be a single compact JSON object with this shape:
@@ -103,7 +132,7 @@ app.post("/generate-quiz-stream", async (req, res) => {
     ];
 
     console.log(`🧠 Using OpenAI model: ${modelToUse} (streaming NDJSON)`);
-    
+
     console.log(`💬 User messages: ${JSON.stringify(user)}`);
     const stream = await openai.chat.completions.create({
       model: modelToUse,
