@@ -93,6 +93,10 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
+                <configuration>
+                    <!-- Make this EXACTLY your @SpringBootApplication FQCN -->
+                    <mainClass>com.aaronzz10.iquiz_server_java.IQuizJavaApplication</mainClass>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
