@@ -24,7 +24,7 @@ It allows users to upload their study materials (JSON, CSV, or PDF slides) and a
 - **Help Window:** Displays usage instructions and tips in an accessible popup.
 - **Backend Options:** Supports two backend servers for quiz generation:
   - **Node.js + Express** server deployed on Render.
-  - **Spring Boot (Java)** server deployed on Render).
+  - **Spring Boot (Java)** server deployed on Render.
 - Users can switch between these backend servers for generating quizzes.
 
 ## 🧩 Tech Stack
