@@ -6,7 +6,7 @@ import { normalize } from "./utils/normalize";
 import ControlsBar from "./components/ControlsBar";
 import Nav from "./components/Nav";
 import StatusBanner from "./components/StatusBanner";
-import LoadQuestions from "./components/LoadQuestions";
+import LoadQuestions from "./components/DownloadLoadQuestions";
 import UploadPDF from "./components/UploadPDF";
 import QuizHeader from "./components/QuizHeader";
 import ShortAnswer from "./components/ShortAnswer";

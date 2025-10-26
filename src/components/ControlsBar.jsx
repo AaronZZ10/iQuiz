@@ -29,7 +29,7 @@ export default function ControlsBar({
         <label className="flex items-center gap-2 text-sm whitespace-nowrap">
           Tag:
           <select
-            className="px-2 py-1 rounded border max-w-[250px]"
+            className="px-2 py-1 rounded border w-60"
             value={filterTag}
             onChange={(e) => {
               setFilterTag(e.target.value);

@@ -17,7 +17,7 @@ export default function QuizHeader({ busy }) {
           className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
           onClick={() => setShowHelp(true)}
         >
-          Help
+          ℹ️ Help
         </button>
       </div>
 

@@ -19,7 +19,7 @@ export default function LoadQuestions({
           disabled={busy || deck.length === 0}
           title="Download all questions as JSON"
         >
-          Download Questions
+          ⬇️ Download Questions
         </button>
         <div className="self-start sm:ml-auto">
           <input
