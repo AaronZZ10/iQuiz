@@ -19,7 +19,7 @@ export default function StatusBanner({ statusMsg, busy }) {
 function Spinner() {
   return (
     <span
-      className="inline-block h-5 w-5 animate-spin rounded-full border border-current border-t-transparent align-middle"
+      className="inline-block h-4 aspect-square animate-spin rounded-full border-2 border-current border-t-transparent align-middle"
       aria-label="Loading"
     />
   );
