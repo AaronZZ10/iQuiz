@@ -28,7 +28,6 @@ export default function UploadPDF({
             <option value="gpt-5-nano">GPT-5 nano</option>
             <option value="gpt-5-mini">GPT-5 mini</option>
             <option value="gpt-5">GPT-5</option>
-            <option value="gpt-4o-mini">GPT-4o mini</option>
           </select>
         </label>
 
