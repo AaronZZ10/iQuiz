@@ -1,4 +1,4 @@
-export default function StatusBanner({statusMsg, busy}) {
+export default function StatusBanner({ statusMsg, busy }) {
   return (
     <div
       className={
@@ -19,7 +19,7 @@ export default function StatusBanner({statusMsg, busy}) {
 function Spinner() {
   return (
     <span
-      className="inline-block h-4 w-4 align-middle animate-spin rounded-full border-2 border-current border-t-transparent"
+      className="inline-block h-5 w-5 animate-spin rounded-full border border-current border-t-transparent align-middle"
       aria-label="Loading"
     />
   );
