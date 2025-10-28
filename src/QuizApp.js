@@ -58,7 +58,7 @@ export default function QuizApp() {
   const [slidesName, setSlidesName] = useState(null);
 
   // Download helpers
-  function makeFileName(prefix = "iQuiz_of") {
+  function makeFileName(prefix = "iQuiz") {
     const safeSlideName = (slidesName || "untitled")
       .replace(/\.pdf$/i, "")
       .replace(/\s+/g, "_");
