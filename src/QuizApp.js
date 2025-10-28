@@ -488,7 +488,9 @@ export default function QuizApp() {
               setSlidesName(slides.name || null);
               setStatusMsg({
                 type: "success",
-                text: `Done! Received ${payload.total} questions for ${slidesName}.`,
+                text: `Done! Received ${payload.total} questions for ${
+                  slides.name || null
+                }.`,
               });
             } else if (event === "error") {
               setBusy(false);
