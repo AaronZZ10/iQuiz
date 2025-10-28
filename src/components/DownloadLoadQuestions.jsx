@@ -4,6 +4,7 @@ export default function LoadQuestions({
   onFile,
   downloadDeckJSON,
   deck,
+  canDownload
 }) {
   return (
     <div className="rounded-2xl border bg-white p-4 space-y-3">
@@ -16,7 +17,7 @@ export default function LoadQuestions({
           type="button"
           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border self-start sm:mx-auto w-auto"
           onClick={downloadDeckJSON}
-          disabled={busy || deck.length === 0}
+          disabled={busy || deck.length === 0||canDownload===false}
           title="Download all questions as JSON"
         >
           ⬇️ Download Questions

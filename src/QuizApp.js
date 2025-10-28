@@ -54,15 +54,15 @@ export default function QuizApp() {
   const [model, setModel] = useState("gpt-5-nano");
   const [targetCount, setTargetCount] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [canDownload, setCanDownload] = useState(false);
+  const [slidesName, setSlidesName] = useState(null);
 
   // Download helpers
-  function makeFileName(prefix = "iQuiz_export") {
-    const d = new Date();
-    const pad = (n) => String(n).padStart(2, "0");
-    const ts = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
-      d.getDate()
-    )}_${pad(d.getHours())}-${pad(d.getMinutes())}`;
-    return `${prefix}_${ts}.json`;
+  function makeFileName(prefix = "iQuiz_of") {
+    const safeSlideName = (slidesName || "untitled")
+      .replace(/\.pdf$/i, "")
+      .replace(/\s+/g, "_");
+    return `${prefix}_${safeSlideName}.json`;
   }
 
   function downloadDeckJSON() {
@@ -85,6 +85,7 @@ export default function QuizApp() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
+
     a.download = makeFileName();
     document.body.appendChild(a);
     a.click();
@@ -92,7 +93,9 @@ export default function QuizApp() {
     URL.revokeObjectURL(url);
     setStatusMsg?.({
       type: "success",
-      text: `Downloaded ${items.length} questions as JSON.`,
+      text: `Downloaded ${
+        items.length
+      } questions in ${makeFileName()} successfully.`,
     });
   }
 
@@ -237,7 +240,8 @@ export default function QuizApp() {
         try {
           const items = normalize(demoDeck);
           setDeck(items);
-          resetQuiz();
+          setSlidesName("Demo_Quiz");
+          setCanDownload(true);
           setStatusMsg({
             type: "info",
             text: "Loaded demo quiz with 30 questions.",
@@ -324,6 +328,7 @@ export default function QuizApp() {
     const reader = new FileReader();
     reader.onload = () => loadFromText(String(reader.result));
     reader.readAsText(f);
+    setCanDownload(false);
     e.target.value = null;
   }
 
@@ -381,7 +386,7 @@ export default function QuizApp() {
     try {
       setStatusMsg({
         type: "info",
-        text: `Found ${slideArr.length} slides. Generating quiz questions with OpenAI… It can take a minute or two.`,
+        text: `Found ${slideArr.length} slides in ${slides.name}. Generating quiz questions with OpenAI… It can take a couple of minutes.`,
       });
       const resp = await fetch(`${API_BASE}/generate-quiz-stream`, {
         method: "POST",
@@ -441,6 +446,8 @@ export default function QuizApp() {
           type: "success",
           text: `Generated ${items.length} questions (fallback, no streaming).`,
         });
+        setCanDownload(true);
+        setSlidesName(slides.name || null);
         setBusy(false);
         return;
       }
@@ -477,6 +484,8 @@ export default function QuizApp() {
               setDeck((d) => normalize([...d, payload.item]));
             } else if (event === "done") {
               setBusy(false);
+              setCanDownload(true);
+              setSlidesName(slides.name || null);
               setStatusMsg({
                 type: "success",
                 text: `Done! Received ${payload.total} questions.`,
@@ -526,6 +535,7 @@ export default function QuizApp() {
           onFile={onFile}
           downloadDeckJSON={downloadDeckJSON}
           deck={deck}
+          canDownload={canDownload}
         />
 
         {/* Quiz Card */}
@@ -557,6 +567,8 @@ export default function QuizApp() {
               showConfirm,
               setShowConfirm,
               setStatusMsg,
+              setSlidesName,
+              setCanDownload,
             }}
             setSelectedChoice={(v) =>
               setQuizState((s) => ({ ...s, selectedChoice: v }))

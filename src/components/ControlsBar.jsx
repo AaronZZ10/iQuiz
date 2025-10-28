@@ -22,6 +22,8 @@ export default function ControlsBar({
   flaggedIds,
   showConfirm,
   setShowConfirm,
+  setSlidesName,
+  setCanDownload
 }) {
   return (
     <div className="flex flex-wrap items-center gap-4 mb-2 justify-between">
@@ -136,6 +138,8 @@ export default function ControlsBar({
                   setDeck([]);
                   resetQuiz();
                   setStatusMsg(null);
+                  setSlidesName(null);
+                  setCanDownload(false);
                 }}
               >
                 Confirm
