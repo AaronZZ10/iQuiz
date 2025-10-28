@@ -386,7 +386,7 @@ export default function QuizApp() {
     try {
       setStatusMsg({
         type: "info",
-        text: `Found ${slideArr.length} slides in ${slides.name}. Generating quiz questions with ${model}. It can take a couple of minutes.`,
+        text: `Found ${slideArr.length} slides in ${slides.name}. Generating quiz questions with Gemini. It can take a couple of minutes.`,
       });
       const resp = await fetch(`${API_BASE}/generate-quiz-stream`, {
         method: "POST",
