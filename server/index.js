@@ -7,7 +7,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
-const allowed = ["http://localhost:3000", "http://iquiz-1.onrender.com"];
+const allowed = ["http://localhost:3000", "https://iquiz-1.onrender.com"];
 app.use(cors({ origin: allowed }));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
