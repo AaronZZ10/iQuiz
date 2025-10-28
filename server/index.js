@@ -2,17 +2,32 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
+const allowed = ["http://localhost:3000", "http://iquiz-1.onrender.com"];
+app.use(cors({ origin: allowed }));
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-const allowed = [
-  "https://iquiz-1.onrender.com",
-  "http://localhost:3000" 
-];
-app.use(cors({ origin: allowed }));
+const gemini = process.env.GOOGLE_API_KEY
+  ? new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
+  : null;
+
+const OPENAI_MODELS = new Set([
+  "gpt-5-nano",
+  "gpt-5-mini",
+  "gpt-5"
+]);
+const GEMINI_MODELS = new Set([
+  "gemini-2.5-flash",
+  "gemini-2.5",
+  "gemini-2.5-flash-lite",
+]);
+const isGemini = (m) => GEMINI_MODELS.has(m);
+const isOpenAI = (m) => OPENAI_MODELS.has(m);
 
 // Simple chunking to keep prompts reasonable
 function chunkSlides(slides, maxChars = 7000) {
@@ -110,13 +125,9 @@ function normalizeItem(it) {
 app.post("/generate-quiz-stream", async (req, res) => {
   try {
     const { slides, model, target } = req.body;
-    const ALLOWED_MODELS = new Set([
-      "gpt-5-nano",
-      "gpt-5-mini",
-      "gpt-5",
-      "gpt-4o-mini",
-    ]);
-    const modelToUse = ALLOWED_MODELS.has(model) ? model : "gpt-5-nano";
+    const modelToUse =
+      isOpenAI(model) || isGemini(model) ? model : "gemini 2.5-flash-lite";
+
     if (!Array.isArray(slides) || slides.length === 0) {
       return res.status(400).json({ error: "slides[] required" });
     }
@@ -130,6 +141,133 @@ app.post("/generate-quiz-stream", async (req, res) => {
     const extra = Number(target)
       ? `Please generate about ${Math.floor(target)} total questions.`
       : "";
+
+    if (isGemini(modelToUse)) {
+      if (!gemini) {
+        res.write(`event: error\n`);
+        res.write(
+          `data: ${JSON.stringify({
+            error: "GOOGLE_API_KEY not set on server",
+          })}\n\n`
+        );
+        return res.end();
+      }
+      console.log(`🧠 Using Gemini model: ${modelToUse} (streaming NDJSON)`);
+
+      const gModel = gemini.getGenerativeModel({
+        model: modelToUse,
+        systemInstruction: SYSTEM_NDJSON,
+      });
+
+      const promptParts = [
+        { text: "Slides text:\n" + slides.join("\n---\n") },
+        { text: `Stream NDJSON now. ${extra}` },
+      ];
+
+      let buffer = "";
+      const seen = new Set();
+      const send = (event, payload) => {
+        res.write(`event: ${event}\n`);
+        res.write(`data: ${JSON.stringify(payload)}\n\n`);
+      };
+
+      try {
+        const result = await gModel.generateContentStream(promptParts);
+
+        for await (const chunk of result.stream) {
+          // Be defensive: some SDK builds throw when parsing; extract text from multiple shapes
+          let delta = "";
+          try {
+            delta = typeof chunk.text === "function" ? chunk.text() : "";
+            if (!delta && chunk?.candidates?.length) {
+              const parts = chunk.candidates[0]?.content?.parts || [];
+              delta = parts.map((p) => p?.text || "").join("");
+            }
+          } catch (_) {
+            // ignore and let delta stay empty
+          }
+          if (!delta) continue;
+
+          buffer += String(delta);
+
+          // Flush complete NDJSON lines
+          let nl;
+          while ((nl = buffer.indexOf("\n")) !== -1) {
+            const line = buffer.slice(0, nl).trim();
+            buffer = buffer.slice(nl + 1);
+            if (!line) continue;
+            try {
+              const raw = JSON.parse(line);
+              const norm = normalizeItem(raw);
+              if (norm) {
+                const key = norm.question.toLowerCase();
+                if (!seen.has(key)) {
+                  seen.add(key);
+                  send("item", { item: norm });
+                }
+              }
+            } catch {}
+          }
+        }
+
+        // flush tail
+        const last = buffer.trim();
+        if (last) {
+          try {
+            const raw = JSON.parse(last);
+            const norm = normalizeItem(raw);
+            if (norm) {
+              const key = norm.question.toLowerCase();
+              if (!seen.has(key)) {
+                seen.add(key);
+                send("item", { item: norm });
+              }
+            }
+          } catch {}
+        }
+
+        send("done", { total: seen.size });
+        return res.end();
+      } catch (err) {
+        console.warn(
+          "Gemini stream failed, falling back to non-streaming:",
+          String(err?.message || err)
+        );
+        // Fallback: do a single non-streaming request and stream the items we parse
+        try {
+          const fallback = await gModel.generateContent(promptParts);
+          const text = (await fallback.response).text();
+          // Expect NDJSON (per prompt). If not, split by newlines and try JSON per line.
+          const lines = String(text || "").split(/\r?\n/);
+          for (const rawLine of lines) {
+            const line = rawLine.trim();
+            if (!line) continue;
+            try {
+              const obj = JSON.parse(line);
+              const norm = normalizeItem(obj);
+              if (norm) {
+                const key = norm.question.toLowerCase();
+                if (!seen.has(key)) {
+                  seen.add(key);
+                  send("item", { item: norm });
+                }
+              }
+            } catch {}
+          }
+          send("done", { total: seen.size });
+          return res.end();
+        } catch (e2) {
+          res.write(`event: error\n`);
+          res.write(
+            `data: ${JSON.stringify({
+              error: String(e2?.message || e2),
+              hint: "Try '-latest' Gemini models or switch to non-streaming endpoint.",
+            })}\n\n`
+          );
+          return res.end();
+        }
+      }
+    }
 
     const user = [
       { type: "text", text: "Slides text:\n" + slides.join("\n---\n") },
@@ -221,16 +359,78 @@ app.post("/generate-quiz-stream", async (req, res) => {
 app.post("/generate-quiz", async (req, res) => {
   try {
     const { slides, model, target } = req.body;
-    const ALLOWED_MODELS = new Set([
-      "gpt-5-nano",
-      "gpt-5-mini",
-      "gpt-5",
-      "gpt-4o-mini",
-    ]);
-    const modelToUse = ALLOWED_MODELS.has(model) ? model : "gpt-5-nano";
+    const modelToUse =
+      isOpenAI(model) || isGemini(model) ? model : "gemini 2.5-flash-lite";
 
     if (!Array.isArray(slides) || !slides.length) {
       return res.status(400).json({ error: "slides[] required" });
+    }
+
+    if (isGemini(modelToUse)) {
+      if (!gemini) {
+        return res
+          .status(400)
+          .json({ error: "GOOGLE_API_KEY not set on server" });
+      }
+      console.log(`🧠 Using Gemini model: ${modelToUse}`);
+
+      const gModel = gemini.getGenerativeModel({
+        model: modelToUse,
+        systemInstruction: SYSTEM,
+      });
+
+      const extra = Number(target)
+        ? `Generate ${Math.floor(target)} total questions.`
+        : "";
+
+      const promptParts = [
+        { text: "Slides text:\n" + slides.join("\n---\n") },
+        { text: `Produce JSON now. ${extra}` },
+      ];
+
+      const resp = await gModel.generateContent(promptParts);
+      const text = (await resp.response).text();
+      console.log("⬅️ Received response from Gemini:");
+      console.log(String(text));
+
+      let json = {};
+      try {
+        json = JSON.parse(text || "{}");
+      } catch {}
+      const items = Array.isArray(json.items) ? json.items : [];
+
+      const processed = items.map((it) => {
+        let answer = it.answer;
+        if (typeof answer === "number") {
+          if (Array.isArray(it.choices) && it.choices.length > answer) {
+            answer = it.choices[answer];
+          } else if (answer === 0 || answer === 1) {
+            answer = answer === 0 ? "True" : "False";
+          }
+        } else if (
+          typeof answer === "string" &&
+          /^[0-3]$/.test(answer.trim())
+        ) {
+          const idx = parseInt(answer.trim(), 10);
+          if (Array.isArray(it.choices) && it.choices.length > idx) {
+            answer = it.choices[idx];
+          } else if (idx === 0 || idx === 1) {
+            answer = idx === 0 ? "True" : "False";
+          }
+        }
+        return { ...it, answer: String(answer ?? "") };
+      });
+
+      // Deduplicate by question text
+      const seen = new Set();
+      const unique = processed.filter((it) => {
+        const key = (it.question || "").toLowerCase();
+        if (seen.has(key) || !key) return false;
+        seen.add(key);
+        return true;
+      });
+
+      return res.json({ items: unique });
     }
 
     const chunks = chunkSlides(slides);

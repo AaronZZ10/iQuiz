@@ -51,7 +51,7 @@ export default function QuizApp() {
   const fileRef = useRef(null);
   const jumpRef = useRef(null);
   const [savedChoices, setSavedChoices] = useState({});
-  const [model, setModel] = useState("gpt-5-nano");
+  const [model, setModel] = useState("gemini 2.5-flash-lite");
   const [targetCount, setTargetCount] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [canDownload, setCanDownload] = useState(false);
@@ -386,7 +386,7 @@ export default function QuizApp() {
     try {
       setStatusMsg({
         type: "info",
-        text: `Found ${slideArr.length} slides in ${slides.name}. Generating quiz questions with OpenAI… It can take a couple of minutes.`,
+        text: `Found ${slideArr.length} slides in ${slides.name}. Generating quiz questions with ${model}. It can take a couple of minutes.`,
       });
       const resp = await fetch(`${API_BASE}/generate-quiz-stream`, {
         method: "POST",
