@@ -386,7 +386,10 @@ export default function QuizApp() {
     try {
       setStatusMsg({
         type: "info",
-        text: `Found ${slideArr.length} slides in ${slides.name}. Generating quiz questions with OpenAI… It can take a couple of minutes.`,
+        text: `Found ${slideArr.length} slides in ${slides.name.replace(
+          /\.pdf$/i,
+          ""
+        )}. Generating quiz questions with OpenAI… It can take a couple of minutes.`,
       });
       const resp = await fetch(`${API_BASE}/generate-quiz-stream`, {
         method: "POST",
@@ -488,9 +491,9 @@ export default function QuizApp() {
               setSlidesName(slides.name || null);
               setStatusMsg({
                 type: "success",
-                text: `Done! Received ${payload.total} questions for ${
-                  slides.name || null
-                }.`,
+                text: `Done! Received ${
+                  payload.total
+                } questions for ${slides.name.replace(/\.pdf$/i, "")}.`,
               });
             } else if (event === "error") {
               setBusy(false);
