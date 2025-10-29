@@ -33,23 +33,41 @@ export function I18nProvider({ children }) {
     localStorage.setItem("iquiz.lang", lang);
     try {
       document.documentElement.setAttribute("lang", lang);
-      if (lang === "ar") document.documentElement.dir = "rtl";
-      else document.documentElement.dir = "ltr";
+      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
     } catch {}
 
-    // URL synchronization: update path to include /lang prefix if missing or changed
     if (typeof window !== "undefined") {
-      const path = window.location.pathname;
-      const match = path.match(/^\/([a-zA-Z-]{2,})($|\/)/);
+      const fullPath = window.location.pathname;
+
+      // Detect base prefix (e.g., "/iQuiz" on GitHub Pages)
+      // Heuristic: first path segment that is NOT a language code
+      const segments = fullPath.split("/").filter(Boolean);
+      const isLang = (s) => /^[a-zA-Z-]{2,}$/.test(s);
+      const basePrefix =
+        segments.length && !isLang(segments[0]) ? `/${segments[0]}` : "";
+
+      // Path without base
+      const pathWithoutBase = basePrefix
+        ? fullPath.slice(basePrefix.length) || "/"
+        : fullPath;
+
+      const match = pathWithoutBase.match(/^\/([a-zA-Z-]{2,})($|\/)/);
+
       let newPath;
       if (!match) {
         // No lang prefix, add it
-        newPath = `/${lang}${path === "/" ? "" : path}`;
+        newPath = `${basePrefix}/${lang}${
+          pathWithoutBase === "/" ? "" : pathWithoutBase
+        }`;
       } else if (match[1] !== lang) {
         // Different lang prefix, replace it
-        newPath = path.replace(/^\/[a-zA-Z-]{2,}/, `/${lang}`);
+        newPath = `${basePrefix}${pathWithoutBase.replace(
+          /^\/[a-zA-Z-]{2,}/,
+          `/${lang}`
+        )}`;
       }
-      if (newPath && newPath !== path) {
+
+      if (newPath && newPath !== fullPath) {
         window.history.replaceState(
           window.history.state,
           "",
