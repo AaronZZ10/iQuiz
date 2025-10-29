@@ -1,23 +1,46 @@
 import { useState } from "react";
+import { useI18n } from "../utils/i18n";
 
 export default function QuizHeader({ busy }) {
   const [showHelp, setShowHelp] = useState(false);
+  const { lang, setLang, t } = useI18n();
   return (
     <header className="flex h-10 items-center justify-between gap-4 pt-4">
       <div>
-        <h1 className="text-3xl font-bold">iQuiz</h1>
-        <p className="text-sm opacity-80">
-          A smart, lightweight web app for reviewing study materials and
-          generating quizzes
-        </p>
+        <h1 className="text-3xl font-bold">{t("appTitle")}</h1>
+        <p className="text-sm opacity-80">{t("tagline")}</p>
       </div>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
+        {/* Language selector */}
+        <label className="hidden sm:flex items-center gap-2 text-sm">
+          <span className="opacity-70">{t("language")}:</span>
+          <select
+            className="px-2 py-1 rounded border"
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            disabled={busy}
+          >
+            <option value="en">🇬🇧 English</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ar">🇶🇦 العربية</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ko">🇰🇷 한국어</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="hi">🇮🇳 हिंदी</option>
+            <option value="it">🇮🇹 Italiano</option>
+          </select>
+        </label>
+
         <button
           disabled={busy}
           className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
           onClick={() => setShowHelp(true)}
         >
-          ℹ️ Help
+          ℹ️ {t("help")}
         </button>
       </div>
 
@@ -33,7 +56,7 @@ export default function QuizHeader({ busy }) {
                 className="px-4 py-1 h-full rounded-lg border bg-red-500 hover:bg-red-400 text-white"
                 onClick={() => setShowHelp(false)}
               >
-                Close
+                {t("close")}
               </button>
             </div>
 
@@ -145,8 +168,9 @@ export default function QuizHeader({ busy }) {
                 <h3 className="font-semibold mb-1">Developer Shortcuts</h3>
                 <ul className="list-disc list-inside space-y-1">
                   <li>
-                    <strong>Load Demo Quiz</strong>: press <kbd>⌘</kbd> + {" "}
-                    <kbd>K</kbd> (macOS) or <kbd>Ctrl</kbd> + <kbd>K</kbd> (Win/Linux).
+                    <strong>Load Demo Quiz</strong>: press <kbd>⌘</kbd> +{" "}
+                    <kbd>K</kbd> (macOS) or <kbd>Ctrl</kbd> + <kbd>K</kbd>{" "}
+                    (Win/Linux).
                   </li>
                 </ul>
               </section>

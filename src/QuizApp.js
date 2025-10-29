@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
+import { I18nProvider, useI18n } from "./utils/i18n";
 import { extractPdfText } from "./utils/pdf";
 import demoDeck from "./utils/demoDeck";
 import { parseCSV } from "./utils/csv";
@@ -28,7 +29,7 @@ const clean = (s) =>
     .trim();
 
 /* ---------- app ---------- */
-export default function QuizApp() {
+function QuizAppBody() {
   const [deck, setDeck] = useState([]);
   const [idx, setIdx] = useState(0);
   const [show, setShow] = useState(false);
@@ -57,6 +58,9 @@ export default function QuizApp() {
   const [canDownload, setCanDownload] = useState(false);
   const [slidesName, setSlidesName] = useState(null);
 
+  // i18n
+  const { lang, t } = useI18n();
+
   // Download helpers
   function makeFileName(prefix = "iQuiz") {
     const safeSlideName = (slidesName || "untitled")
@@ -67,10 +71,7 @@ export default function QuizApp() {
 
   function downloadDeckJSON() {
     if (!Array.isArray(deck) || deck.length === 0) {
-      setStatusMsg?.({
-        type: "error",
-        text: "Nothing to download — no questions loaded.",
-      });
+      setStatusMsg?.({ type: "error", key: t("nothingToDownload") });
       return;
     }
     const items = deck.map((q) => ({
@@ -93,9 +94,7 @@ export default function QuizApp() {
     URL.revokeObjectURL(url);
     setStatusMsg?.({
       type: "success",
-      text: `Downloaded ${
-        items.length
-      } questions in ${makeFileName()} successfully.`,
+      key: t("downloadedSuccess", items.length, makeFileName()),
     });
   }
 
@@ -244,16 +243,16 @@ export default function QuizApp() {
           setCanDownload(true);
           setStatusMsg({
             type: "info",
-            text: "Loaded demo quiz with 30 questions.",
+            key: "loadDemoQuiz",
           });
         } catch (err) {
-          setStatusMsg({ type: "error", text: "Failed to load demo quiz." });
+          setStatusMsg({ type: "error", key: "failedLoadDemo" });
         }
       }
     }
     window.addEventListener("keydown", onDevShortcut);
     return () => window.removeEventListener("keydown", onDevShortcut);
-  }, [busy]);
+  }, [busy, lang, t]);
 
   const isCurrentFlagged = current ? flaggedIds.has(current.id) : false;
 
@@ -313,10 +312,11 @@ export default function QuizApp() {
       resetQuiz();
       setStatusMsg({
         type: "success",
-        text: `Loaded ${items.length} questions from ${fileName}.`,
+        key: "loadedFromFile",
+        args: [items.length, fileName.replace(/\.json$/i, "")],
       });
     } catch (e) {
-      setStatusMsg({ type: "error", text: "Failed to load: " + e.message });
+      setStatusMsg({ type: "error", key: "Failed to load: " + e.message });
     }
   }
 
@@ -369,27 +369,23 @@ export default function QuizApp() {
         (slideArr.type === "application/pdf" ||
           /\.pdf$/i.test(slideArr.name || ""))
       ) {
-        setStatusMsg({ type: "info", text: "Extracting slides from PDF…" });
+        setStatusMsg({ type: "info", key: "extractingPdf" });
         slideArr = await extractPdfText(slideArr);
       }
     } catch (_) {}
 
     if (!Array.isArray(slideArr)) {
-      throw new Error(
-        "No slides extracted (expected an array of slide texts)."
-      );
+      throw new Error(t("noSlidesExtracted"));
     }
     slideArr = slideArr.map((s) => String(s ?? "").trim()).filter(Boolean);
     if (slideArr.length === 0) {
-      throw new Error("No extractable text found in the PDF/slides.");
+      throw new Error(t("noTextFound"));
     }
     try {
       setStatusMsg({
         type: "info",
-        text: `Found ${slideArr.length} slides in ${slides.name.replace(
-          /\.pdf$/i,
-          ""
-        )}. Generating quiz questions with Gemini. It can take a couple of minutes.`,
+        key: "generatingWithGemini",
+        args: [slideArr.length],
       });
       const resp = await fetch(`${API_BASE}/generate-quiz-stream`, {
         method: "POST",
@@ -447,7 +443,7 @@ export default function QuizApp() {
         setDeck(normalize(items));
         setStatusMsg({
           type: "success",
-          text: `Generated ${items.length} questions (fallback, no streaming).`,
+          key: t("generatedNoStream", items.length),
         });
         setCanDownload(true);
         setSlidesName(slides.name || null);
@@ -491,15 +487,18 @@ export default function QuizApp() {
               setSlidesName(slides.name || null);
               setStatusMsg({
                 type: "success",
-                text: `Done! Received ${payload.total} questions for ${
-                  slides.name.replace(/\.pdf$/i, "") || null
-                }.`,
+                key: "doneReceived",
+                args: [
+                  payload.total,
+                  (slides.name || "").replace(/\.pdf$/i, ""),
+                ],
               });
             } else if (event === "error") {
               setBusy(false);
               setStatusMsg({
                 type: "error",
-                text: payload.error || "Stream error.",
+                text: payload.error || null,
+                key: payload.error ? undefined : "streamError",
               });
             }
           } catch (e) {
@@ -508,7 +507,7 @@ export default function QuizApp() {
         }
       }
     } catch (err) {
-      setStatusMsg({ type: "error", text: `Failed: ${err.message}` });
+      setStatusMsg({ type: "error", key: "failedPrefix", args: [err.message] });
       throw err;
     }
   }
@@ -662,11 +661,19 @@ export default function QuizApp() {
             </div>
           ) : (
             <div className="text-center py-16 opacity-80">
-              No questions loaded.
+              {t("noQuestions")}
             </div>
           )}
         </div>
       </div>
     </div>
+  );
+}
+
+export default function QuizApp() {
+  return (
+    <I18nProvider>
+      <QuizAppBody />
+    </I18nProvider>
   );
 }

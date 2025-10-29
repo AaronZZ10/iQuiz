@@ -1,3 +1,5 @@
+import { useI18n } from "../utils/i18n";
+
 export default function LoadQuestions({
   busy,
   fileRef,
@@ -6,11 +8,12 @@ export default function LoadQuestions({
   deck,
   canDownload
 }) {
+  const { t } = useI18n();
   return (
     <div className="rounded-2xl border bg-white p-4 space-y-3">
       <div className="flex flex-col items-start sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
         <label className="font-bold flex items-center gap-2">
-          Download/Load Questions in JSON
+          {t("loadTitle")}
         </label>
 
         <button
@@ -18,9 +21,9 @@ export default function LoadQuestions({
           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border self-start sm:mx-auto w-auto"
           onClick={downloadDeckJSON}
           disabled={busy || deck.length === 0||canDownload===false}
-          title="Download all questions as JSON"
+          title={t("downloadTitle")}
         >
-          ⬇️ Download Questions
+          {t("downloadBtn")}
         </button>
         <div className="self-start sm:ml-auto">
           <input
@@ -38,7 +41,7 @@ export default function LoadQuestions({
       ${busy ? "opacity-50 cursor-not-allowed" : "bg-white hover:bg-gray-100"}
     `}
           >
-            📂 Load Questions
+            {t("loadBtn")}
           </label>
         </div>
       </div>

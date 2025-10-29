@@ -1,3 +1,5 @@
+import { useI18n } from "../utils/i18n";
+
 export default function UploadPDF({
   generateFromPdf,
   busy,
@@ -8,17 +10,16 @@ export default function UploadPDF({
   targetCount,
   setTargetCount,
 }) {
+  const { t } = useI18n();
   return (
     <div className="rounded-2xl border bg-white p-4 space-y-3 m">
       <div className="flex flex-wrap items-center gap-3 text-sm">
-        <label className="font-bold">
-          Upload Lecture Slides or Notes in PDF to Generate a Quiz with A.I.
-        </label>
+        <label className="font-bold">{t("uploadTitle")}</label>
       </div>
       <div className="flex flex-col items-start sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
         {/* Left */}
         <label className="flex items-center gap-2">
-          Model:
+          {t("modelLabel")}
           <select
             className="px-2 py-1 rounded border"
             value={model}
@@ -36,7 +37,7 @@ export default function UploadPDF({
 
         {/* Middle */}
         <label className="flex items-center gap-2 sm:mx-auto">
-          Target number of questions:
+          {t("targetCountLabel")}
           <input
             type="number"
             min={1}
@@ -46,7 +47,7 @@ export default function UploadPDF({
             onChange={(e) => setTargetCount(e.target.value)}
             placeholder="N/A"
             disabled={busy}
-            title="Limit the number of questions to generate (optional)"
+            title={t("targetTooltip")}
           />
         </label>
 
@@ -62,7 +63,11 @@ export default function UploadPDF({
             try {
               await generateFromPdf(f);
             } catch (err) {
-              setStatusMsg({ type: "error", text: `Failed: ${err.message}` });
+              setStatusMsg({
+                type: "error",
+                key: "failedPrefix",
+                args: [err.message],
+              });
               setBusy(false);
             } finally {
               e.target.value = null;
@@ -76,7 +81,7 @@ export default function UploadPDF({
       ${busy ? "opacity-50 cursor-not-allowed" : "bg-white hover:bg-gray-100"}
     `}
         >
-          ⬆️ Upload PDF File
+          {t("uploadPdfButton")}
         </label>
       </div>
     </div>

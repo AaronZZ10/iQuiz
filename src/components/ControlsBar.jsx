@@ -1,3 +1,5 @@
+import { useI18n } from "../utils/i18n";
+
 export default function ControlsBar({
   busy,
   flashMode,
@@ -23,15 +25,16 @@ export default function ControlsBar({
   showConfirm,
   setShowConfirm,
   setSlidesName,
-  setCanDownload
+  setCanDownload,
 }) {
+  const { t } = useI18n();
   return (
     <div className="flex flex-wrap items-center gap-4 mb-2 justify-between">
       <div>
         <label className="flex items-center gap-2 text-sm whitespace-nowrap">
-          Tag:
+          {t("tagLabel")}
           <select
-            className="px-2 py-1 rounded border w-60"
+            className="px-2 py-1 rounded border w-40"
             value={filterTag}
             onChange={(e) => {
               setFilterTag(e.target.value);
@@ -42,7 +45,7 @@ export default function ControlsBar({
               setTyped("");
               setIdx(0);
             }}
-            disabled={busy||tags.length === 0||deck.length === 0}
+            disabled={busy || tags.length === 0 || deck.length === 0}
           >
             {tags.map((t) => (
               <option key={t} value={t}>
@@ -63,10 +66,10 @@ export default function ControlsBar({
           }}
           disabled={busy || flaggedIds.size === 0}
         />
-        Flagged only
+        {t("flaggedOnly")}
       </label>
       <label className="flex items-center gap-2 text-sm">
-        Mode:
+        {t("modeLabel")}
         <select
           className="px-2 py-1 rounded border"
           value={flashMode ? "flash" : shortMode ? "short" : "quiz"}
@@ -96,9 +99,9 @@ export default function ControlsBar({
           }}
           disabled={busy || deck.length === 0}
         >
-          <option value="quiz">MCQ</option>
-          <option value="short">Short Answer</option>
-          <option value="flash">Flashcard</option>
+          <option value="quiz">{t("modeQuiz")}</option>
+          <option value="short">{t("modeShort")}</option>
+          <option value="flash">{t("modeFlash")}</option>
         </select>
       </label>
 
@@ -109,7 +112,7 @@ export default function ControlsBar({
         }}
         disabled={busy || deck.length === 0}
       >
-        🔄 Retry
+        {"🔄 " + t("retry")}
       </button>
 
       <button
@@ -117,19 +120,19 @@ export default function ControlsBar({
         onClick={() => setShowConfirm(true)}
         disabled={busy || deck.length === 0}
       >
-        🗑️ Clear
+        {"🗑️ " + t("clear")}
       </button>
 
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white p-4 rounded-xl shadow-md w-80 text-sm">
-            <p className="mb-3">Clear all questions and start fresh?</p>
+            <p className="mb-3">{t("confirmClearTitle")}</p>
             <div className="flex justify-end gap-2">
               <button
                 className="px-3 py-1 rounded border bg-white hover:bg-gray-100"
                 onClick={() => setShowConfirm(false)}
               >
-                Cancel
+                {t("cancel")}
               </button>
               <button
                 className="px-3 py-1 rounded border bg-red-500 text-white hover:bg-red-600"
@@ -142,7 +145,7 @@ export default function ControlsBar({
                   setCanDownload(false);
                 }}
               >
-                Confirm
+                {t("confirm")}
               </button>
             </div>
           </div>

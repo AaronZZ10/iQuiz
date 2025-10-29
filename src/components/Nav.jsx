@@ -1,4 +1,7 @@
+import {useI18n} from '../utils/i18n';
+
 export default function Nav({setIdx, idx, visible, busy, setTyped, setShow, setShortAnswer, setSelectedChoice, setIsChoiceCorrect}) {
+  const {t} = useI18n();
     return (
         <div className="flex items-center justify-between gap-3">
                 <button
@@ -13,7 +16,7 @@ export default function Nav({setIdx, idx, visible, busy, setTyped, setShow, setS
                   }}
                   disabled={busy || idx === 0}
                 >
-                  Previous
+                  {t("previous")}
                 </button>
 
                 <button
@@ -28,7 +31,7 @@ export default function Nav({setIdx, idx, visible, busy, setTyped, setShow, setS
                   }}
                   disabled={busy || idx >= visible.length - 1}
                 >
-                  Next
+                  {t("next")}
                 </button>
               </div>
     );

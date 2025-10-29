@@ -1,4 +1,14 @@
+import { useI18n } from "../utils/i18n";
+
 export default function StatusBanner({ statusMsg, busy }) {
+  const { t } = useI18n();
+  if (!statusMsg || (!statusMsg.key && !statusMsg.text)) {
+    return null;
+  }
+  const message =
+    statusMsg.text ??
+    (statusMsg.key ? t(statusMsg.key, ...(statusMsg.args || [])) : "");
+
   return (
     <div
       className={
@@ -11,7 +21,7 @@ export default function StatusBanner({ statusMsg, busy }) {
       }
     >
       {busy && <Spinner />}
-      <span>{statusMsg.text}</span>
+      <span>{message}</span>
     </div>
   );
 }
