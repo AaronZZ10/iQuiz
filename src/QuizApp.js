@@ -288,7 +288,7 @@ export default function QuizApp() {
     );
   }
 
-  function loadFromText(text) {
+  function loadFromText(text, fileName) {
     try {
       let items = [];
       const trimmed = (text || "").trim();
@@ -313,7 +313,7 @@ export default function QuizApp() {
       resetQuiz();
       setStatusMsg({
         type: "success",
-        text: `Loaded ${items.length} questions.`,
+        text: `Loaded ${items.length} questions from ${fileName}.`,
       });
     } catch (e) {
       setStatusMsg({ type: "error", text: "Failed to load: " + e.message });
@@ -326,7 +326,7 @@ export default function QuizApp() {
     const f = e.target.files?.[0];
     if (!f) return;
     const reader = new FileReader();
-    reader.onload = () => loadFromText(String(reader.result));
+    reader.onload = () => loadFromText(String(reader.result), f.name);
     reader.readAsText(f);
     setCanDownload(false);
     e.target.value = null;
