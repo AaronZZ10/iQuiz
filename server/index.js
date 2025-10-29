@@ -10,7 +10,7 @@ app.use(express.json({ limit: "10mb" }));
 const allowed = [
   "http://localhost:3000",
   "https://iquiz-1.onrender.com",
-  "https://aaronzz10.github.io/iQuiz/",
+  "https://aaronzz10.github.io/iQuiz",
 ];
 app.use(cors({ origin: allowed }));
 
