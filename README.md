@@ -4,10 +4,14 @@ iQuiz is a web-based intelligent quiz generator and reviewer built with React, T
 It allows users to upload their study materials (JSON, CSV, or PDF slides) and automatically generate review questions using AI models.  
 The **Express backend uses Google Gemini**, while the **Spring Boot backend uses OpenAI**.
 
-| Live Demo                                  | Backend     | Model  | Server Health Check                                      |
-| ------------------------------------------ | ----------- | ------ | -------------------------------------------------------- |
-| [Link](https://aaronzz10.github.io/iQuiz/) | Express.js  | Gemini | [Check](https://iquiz-oz01.onrender.com/health)          |
-| [Link](https://iquiz-spring.onrender.com)  | Spring Boot | GPT    | [Check](https://iquiz-server-spring.onrender.com/health) |
+**Note:** Render servers automatically sleep after 15 minutes of inactivity. Please use the "Wake Up" link below to activate the backend before generating quizzes.
+
+| Live Demo                                  | Backend     | Model  | Server Health Check                                        |
+| ------------------------------------------ | ----------- | ------ | ---------------------------------------------------------- |
+| [Link](https://aaronzz10.github.io/iQuiz/) | Express.js  | Gemini | [Wake Up](https://iquiz-oz01.onrender.com/health)          |
+| [Link](https://iquiz-spring.onrender.com)  | Spring Boot | GPT    | [Wake Up](https://iquiz-server-spring.onrender.com/health) |
+
+_Please click "Wake Up" and wait until you receive an "ok" response before using the app._
 
 ## 🚀 Features
 
