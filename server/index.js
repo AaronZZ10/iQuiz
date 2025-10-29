@@ -74,6 +74,7 @@ for exemple:
 
 Rules:
 - Prefer concise, unambiguous phrasing.
+- Use same language as input slides.
 - MCQ and T/F only. 3-4 choices for MCQ.
 - Focus on definitions, formulas, processes, comparisons, and pitfalls.
 - No external facts; use only provided slides.
@@ -91,6 +92,7 @@ Each line must be a single compact JSON object with this shape:
 }
 Rules:
 - Prefer concise, unambiguous phrasing.
+- Use same language as input slides.
 - MCQ and T/F only. 3-4 choices for MCQ.
 - Focus on definitions, formulas, processes, comparisons, and pitfalls.
 - Use only provided slides content.
