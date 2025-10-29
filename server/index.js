@@ -7,7 +7,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
-const allowed = ["http://localhost:3000", "https://iquiz-1.onrender.com"];
+const allowed = [
+  "http://localhost:3000",
+  "https://iquiz-1.onrender.com",
+  "https://aaronzz10.github.io/iQuiz/",
+];
 app.use(cors({ origin: allowed }));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -16,11 +20,7 @@ const gemini = process.env.GOOGLE_API_KEY
   ? new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
   : null;
 
-const OPENAI_MODELS = new Set([
-  "gpt-5-nano",
-  "gpt-5-mini",
-  "gpt-5"
-]);
+const OPENAI_MODELS = new Set(["gpt-5-nano", "gpt-5-mini", "gpt-5"]);
 const GEMINI_MODELS = new Set([
   "gemini-2.5-flash",
   "gemini-2.5",
