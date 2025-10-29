@@ -3,6 +3,9 @@ import express from "express";
 import cors from "cors";
 import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import path from "path";
+import { fileURLToPath } from "url";
+
 
 const app = express();
 app.use(express.json({ limit: "10mb" }));
@@ -504,9 +507,24 @@ app.post("/generate-quiz", async (req, res) => {
   }
 });
 
+
+// Serve frontend static files
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, "../dist")));
+
+app.get("/health", (_, res) => res.status(200).send("ok"));
+
+// Catch-all to serve frontend index.html for non-API routes
+app.get("*", (req, res) => {
+  if (!req.path.startsWith("/api")) {
+    res.sendFile(path.join(__dirname, "../dist", "index.html"));
+  } else {
+    res.status(404).send("Not Found");
+  }
+});
+
 const port = process.env.PORT || 5050;
 app.listen(port, () =>
   console.log(`Quiz generator API on http://localhost:${port}`)
 );
-
-app.get("/health", (_, res) => res.status(200).send("ok"));
