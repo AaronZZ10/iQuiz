@@ -313,7 +313,7 @@ export default function QuizApp() {
       resetQuiz();
       setStatusMsg({
         type: "success",
-        text: `Loaded ${items.length} questions from ${fileName}.`,
+        text: `Loaded ${items.length} questions from ${fileName.replace(/\.json$/i, "")}.`,
       });
     } catch (e) {
       setStatusMsg({ type: "error", text: "Failed to load: " + e.message });
