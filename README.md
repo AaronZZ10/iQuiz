@@ -7,7 +7,7 @@ The **Express backend uses Google Gemini**, while the **Spring Boot backend uses
 | Live Demo                                  | Backend     | Model  | Server Health Check                                      |
 | ------------------------------------------ | ----------- | ------ | -------------------------------------------------------- |
 | [Link](https://aaronzz10.github.io/iQuiz/) | Express.js  | Gemini | [Check](https://iquiz-oz01.onrender.com/health)          |
-| [Link](https://iquiz-spring.onrender.com)  | Spring Boot | OpenAI | [Check](https://iquiz-server-spring.onrender.com/health) |
+| [Link](https://iquiz-spring.onrender.com)  | Spring Boot | GPT    | [Check](https://iquiz-server-spring.onrender.com/health) |
 
 ## 🚀 Features
 
