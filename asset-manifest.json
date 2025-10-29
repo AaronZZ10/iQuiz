@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "https://aaronzz10.github.io/iQuiz/static/css/main.a35a9508.css",
-    "main.js": "https://aaronzz10.github.io/iQuiz/static/js/main.f62149af.js",
-    "static/js/453.7466b1b3.chunk.js": "https://aaronzz10.github.io/iQuiz/static/js/453.7466b1b3.chunk.js",
-    "index.html": "https://aaronzz10.github.io/iQuiz/index.html",
-    "main.a35a9508.css.map": "https://aaronzz10.github.io/iQuiz/static/css/main.a35a9508.css.map",
-    "main.f62149af.js.map": "https://aaronzz10.github.io/iQuiz/static/js/main.f62149af.js.map",
-    "453.7466b1b3.chunk.js.map": "https://aaronzz10.github.io/iQuiz/static/js/453.7466b1b3.chunk.js.map"
+    "main.css": "/static/css/main.e0c77f70.css",
+    "main.js": "/static/js/main.f70de1b8.js",
+    "static/js/453.7466b1b3.chunk.js": "/static/js/453.7466b1b3.chunk.js",
+    "index.html": "/index.html",
+    "main.e0c77f70.css.map": "/static/css/main.e0c77f70.css.map",
+    "main.f70de1b8.js.map": "/static/js/main.f70de1b8.js.map",
+    "453.7466b1b3.chunk.js.map": "/static/js/453.7466b1b3.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.a35a9508.css",
-    "static/js/main.f62149af.js"
+    "static/css/main.e0c77f70.css",
+    "static/js/main.f70de1b8.js"
   ]
 }
