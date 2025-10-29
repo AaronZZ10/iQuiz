@@ -514,12 +514,8 @@ app.use(express.static(path.join(__dirname, "../dist")));
 app.get("/health", (_, res) => res.status(200).send("ok"));
 
 // Catch-all route for React (Express 5 fix)
-app.get("/*", (req, res) => {
-  if (!req.path.startsWith("/api")) {
-    res.sendFile(path.join(__dirname, "../dist", "index.html"));
-  } else {
-    res.status(404).send("Not Found");
-  }
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist", "index.html"));
 });
 
 const port = process.env.PORT || 5050;
