@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "https://aaronzz10.github.io/iQuiz/static/css/main.e0c77f70.css",
-    "main.js": "https://aaronzz10.github.io/iQuiz/static/js/main.0f73f8a2.js",
+    "main.css": "https://aaronzz10.github.io/iQuiz/static/css/main.a35a9508.css",
+    "main.js": "https://aaronzz10.github.io/iQuiz/static/js/main.f1e9cb20.js",
     "static/js/453.7466b1b3.chunk.js": "https://aaronzz10.github.io/iQuiz/static/js/453.7466b1b3.chunk.js",
     "index.html": "https://aaronzz10.github.io/iQuiz/index.html",
-    "main.e0c77f70.css.map": "https://aaronzz10.github.io/iQuiz/static/css/main.e0c77f70.css.map",
-    "main.0f73f8a2.js.map": "https://aaronzz10.github.io/iQuiz/static/js/main.0f73f8a2.js.map",
+    "main.a35a9508.css.map": "https://aaronzz10.github.io/iQuiz/static/css/main.a35a9508.css.map",
+    "main.f1e9cb20.js.map": "https://aaronzz10.github.io/iQuiz/static/js/main.f1e9cb20.js.map",
     "453.7466b1b3.chunk.js.map": "https://aaronzz10.github.io/iQuiz/static/js/453.7466b1b3.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e0c77f70.css",
-    "static/js/main.0f73f8a2.js"
+    "static/css/main.a35a9508.css",
+    "static/js/main.f1e9cb20.js"
   ]
 }
