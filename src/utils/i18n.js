@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import DICT from "./i18nDict";
 
 const I18nCtx = createContext({
@@ -29,53 +29,7 @@ export function I18nProvider({ children }) {
     return localStorage.getItem("iquiz.lang") || "en";
   });
 
-  useEffect(() => {
-    localStorage.setItem("iquiz.lang", lang);
-    try {
-      document.documentElement.setAttribute("lang", lang);
-      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    } catch {}
 
-    if (typeof window !== "undefined") {
-      const fullPath = window.location.pathname;
-
-      // Detect base prefix (e.g., "/iQuiz" on GitHub Pages)
-      // Heuristic: first path segment that is NOT a language code
-      const segments = fullPath.split("/").filter(Boolean);
-      const isLang = (s) => /^[a-zA-Z-]{2,}$/.test(s);
-      const basePrefix =
-        segments.length && !isLang(segments[0]) ? `/${segments[0]}` : "";
-
-      // Path without base
-      const pathWithoutBase = basePrefix
-        ? fullPath.slice(basePrefix.length) || "/"
-        : fullPath;
-
-      const match = pathWithoutBase.match(/^\/([a-zA-Z-]{2,})($|\/)/);
-
-      let newPath;
-      if (!match) {
-        // No lang prefix, add it
-        newPath = `${basePrefix}/${lang}${
-          pathWithoutBase === "/" ? "" : pathWithoutBase
-        }`;
-      } else if (match[1] !== lang) {
-        // Different lang prefix, replace it
-        newPath = `${basePrefix}${pathWithoutBase.replace(
-          /^\/[a-zA-Z-]{2,}/,
-          `/${lang}`
-        )}`;
-      }
-
-      if (newPath && newPath !== fullPath) {
-        window.history.replaceState(
-          window.history.state,
-          "",
-          newPath + window.location.search + window.location.hash
-        );
-      }
-    }
-  }, [lang]);
 
   const t = useMemo(() => {
     const dict = DICT[lang] || DICT.en;
