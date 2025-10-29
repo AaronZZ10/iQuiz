@@ -6,10 +6,10 @@ The **Express backend uses Google Gemini**, while the **Spring Boot backend uses
 
 **Note:** Render servers automatically sleep after 15 minutes of inactivity. Please use the "Wake Up" link below to activate the backend before generating quizzes.
 
-| Live Demo                                  | Backend     | Model  | Server Health Check                                        |
-| ------------------------------------------ | ----------- | ------ | ---------------------------------------------------------- |
-| [Link](https://aaronzz10.github.io/iQuiz/) | Express.js  | Gemini | [Wake Up](https://iquiz-oz01.onrender.com/health)          |
-| [Link](https://iquiz-spring.onrender.com)  | Spring Boot | GPT    | [Wake Up](https://iquiz-server-spring.onrender.com/health) |
+| Live Demo                                 | Backend     | Model  | Server Health Check                                        |
+| ----------------------------------------- | ----------- | ------ | ---------------------------------------------------------- |
+| [Link](https://iquiz-1.onrender.com)      | Express.js  | Gemini | [Wake Up](https://iquiz-oz01.onrender.com/health)          |
+| [Link](https://iquiz-spring.onrender.com) | Spring Boot | GPT    | [Wake Up](https://iquiz-server-spring.onrender.com/health) |
 
 _Please click "Wake Up" and wait until you receive an "ok" response before using the app._
 
@@ -29,6 +29,7 @@ _Please click "Wake Up" and wait until you receive an "ok" response before using
 - **Real-time Streaming:** Questions load incrementally as AI streams results.
 - **Responsive UI:** Built with TailwindCSS for a clean, adaptive design.
 - **Help Window:** Displays usage instructions and tips in an accessible popup.
+- **Multilingual Support:** Switch seamlessly between English and other languages across the entire UI, including buttons, messages, and status banners.
 - **Backend Options:** Supports two backend servers for quiz generation:
   - **Node.js + Express** server using **Google Gemini API**, deployed on Render.
   - **Spring Boot (Java)** server using **OpenAI API**, deployed on Render.

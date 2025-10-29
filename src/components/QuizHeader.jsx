@@ -37,7 +37,7 @@ export default function QuizHeader({ busy }) {
 
         <button
           disabled={busy}
-          className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
+          className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50 text-sm"
           onClick={() => setShowHelp(true)}
         >
           ℹ️ {t("help")}
