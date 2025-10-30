@@ -4,6 +4,7 @@ import { useI18n } from "../utils/i18n";
 export default function QuizHeader({ busy }) {
   const [showHelp, setShowHelp] = useState(false);
   const { lang, setLang, t } = useI18n();
+  
   return (
     <header className="flex h-10 items-center justify-between gap-4 pt-4">
       <div>

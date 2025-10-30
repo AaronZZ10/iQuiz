@@ -10,26 +10,8 @@ const I18nCtx = createContext({
 
 export function I18nProvider({ children }) {
   // Try to detect language from URL prefix (e.g., /en, /ar, etc.)
-  const supportedLangs = Object.keys(DICT);
-  function detectLangFromUrl() {
-    if (typeof window === "undefined") return null;
-    const path = window.location.pathname;
-    const match = path.match(/^\/([a-zA-Z-]{2,})($|\/)/);
-    if (match && supportedLangs.includes(match[1])) {
-      return match[1];
-    }
-    return null;
-  }
 
-  const [lang, setLang] = useState(() => {
-    // 1. Try URL
-    const urlLang = detectLangFromUrl();
-    if (urlLang) return urlLang;
-    // 2. Try localStorage
-    return localStorage.getItem("iquiz.lang") || "en";
-  });
-
-
+  const [lang, setLang] = useState("en");
 
   const t = useMemo(() => {
     const dict = DICT[lang] || DICT.en;
