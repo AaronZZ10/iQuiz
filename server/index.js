@@ -78,7 +78,8 @@ Rules:
 - MCQ and T/F only. 3-4 choices for MCQ.
 - Focus on definitions, formulas, processes, comparisons, and pitfalls.
 - No external facts; use only provided slides.
-- Keep each question self-contained.`;
+- Keep each question self-contained.
+- 5 questions minimum.`;
 
 const SYSTEM_NDJSON = `You generate exam-style questions from slide text.
 STREAM output as NDJSON (one JSON object per line). Do NOT wrap with an array. Do NOT include any prose before/after.
@@ -96,7 +97,8 @@ Rules:
 - MCQ and T/F only. 3-4 choices for MCQ.
 - Focus on definitions, formulas, processes, comparisons, and pitfalls.
 - Use only provided slides content.
-- Output one JSON object per line.`;
+- Output one JSON object per line.
+- 5 questions minimum.`;
 
 function normalizeItem(it) {
   if (!it || typeof it !== "object") return null;
