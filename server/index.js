@@ -158,7 +158,7 @@ app.post("/generate-quiz-stream", async (req, res) => {
         );
         return res.end();
       }
-      console.log(`🧠 Using Gemini model: ${modelToUse} (streaming NDJSON)`);
+      // console.log(`🧠 Using Gemini model: ${modelToUse} (streaming NDJSON)`);
 
       const gModel = gemini.getGenerativeModel({
         model: modelToUse,
@@ -179,12 +179,12 @@ app.post("/generate-quiz-stream", async (req, res) => {
 
       try {
         const result = await gModel.generateContentStream(promptParts);
-        console.log(
-          "🧠 Gemini prompt:",
-          promptParts.map((p) => p.text).join("\n\n")
-        );
+        // console.log(
+        //   "🧠 Gemini prompt:",
+        //   promptParts.map((p) => p.text).join("\n\n")
+        // );
 
-        let fullGeminiResponse = "";
+        
 
         for await (const chunk of result.stream) {
           // Be defensive: some SDK builds throw when parsing; extract text from multiple shapes
@@ -195,7 +195,7 @@ app.post("/generate-quiz-stream", async (req, res) => {
               const parts = chunk.candidates[0]?.content?.parts || [];
               delta = parts.map((p) => p?.text || "").join("");
             }
-            fullGeminiResponse += delta;
+            
           } catch (_) {
             // ignore and let delta stay empty
           }
@@ -247,8 +247,7 @@ app.post("/generate-quiz-stream", async (req, res) => {
             }
           } catch {}
         }
-        console.log("⬅️ Full Gemini streamed response:");
-        console.log(fullGeminiResponse);
+
         send("done", { total: seen.size });
         return res.end();
       } catch (err) {
@@ -297,9 +296,9 @@ app.post("/generate-quiz-stream", async (req, res) => {
       { type: "text", text: `Stream NDJSON now. ${extra}` },
     ];
 
-    console.log(`🧠 Using OpenAI model: ${modelToUse} (streaming NDJSON)`);
+    // console.log(`🧠 Using OpenAI model: ${modelToUse} (streaming NDJSON)`);
 
-    console.log(`💬 User messages: ${JSON.stringify(user)}`);
+    // console.log(`💬 User messages: ${JSON.stringify(user)}`);
     const stream = await openai.chat.completions.create({
       model: modelToUse,
       stream: true,
@@ -395,7 +394,7 @@ app.post("/generate-quiz", async (req, res) => {
           .status(400)
           .json({ error: "GOOGLE_API_KEY not set on server" });
       }
-      console.log(`🧠 Using Gemini model: ${modelToUse}`);
+      // console.log(`🧠 Using Gemini model: ${modelToUse}`);
 
       const gModel = gemini.getGenerativeModel({
         model: modelToUse,
@@ -413,8 +412,7 @@ app.post("/generate-quiz", async (req, res) => {
 
       const resp = await gModel.generateContent(promptParts);
       const text = (await resp.response).text();
-      console.log("⬅️ Received response from Gemini:");
-      console.log(String(text));
+      
 
       let json = {};
       try {
@@ -468,8 +466,8 @@ app.post("/generate-quiz", async (req, res) => {
         { type: "text", text: "Slides text:\n" + group.join("\n---\n") },
         { type: "text", text: `Produce JSON now. ${extra}` },
       ];
-      console.log(`🧠 Using OpenAI model: ${modelToUse}`);
-      console.log(`💬 User messages: ${JSON.stringify(user)}`);
+      // console.log(`🧠 Using OpenAI model: ${modelToUse}`);
+      // console.log(`💬 User messages: ${JSON.stringify(user)}`);
 
       const resp = await openai.chat.completions.create({
         model: modelToUse,
@@ -479,8 +477,8 @@ app.post("/generate-quiz", async (req, res) => {
           { role: "user", content: user },
         ],
       });
-      console.log("⬅️ Received response from OpenAI:");
-      console.log(String(resp.choices[0].message.content));
+      // console.log("⬅️ Received response from OpenAI:");
+      // console.log(String(resp.choices[0].message.content));
 
       const json = JSON.parse(resp.choices[0].message.content || "{}");
       if (json.items && Array.isArray(json.items)) {
