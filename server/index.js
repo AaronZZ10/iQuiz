@@ -97,8 +97,7 @@ Rules:
 - MCQ and T/F only. 3-4 choices for MCQ.
 - Focus on definitions, formulas, processes, comparisons, and pitfalls.
 - Use only provided slides content.
-- Output one JSON object per line.
-- 5 questions minimum.`;
+- Output one JSON object per line.`;
 
 function normalizeItem(it) {
   if (!it || typeof it !== "object") return null;
@@ -180,6 +179,12 @@ app.post("/generate-quiz-stream", async (req, res) => {
 
       try {
         const result = await gModel.generateContentStream(promptParts);
+        console.log(
+          "🧠 Gemini prompt:",
+          promptParts.map((p) => p.text).join("\n\n")
+        );
+
+        let fullGeminiResponse = "";
 
         for await (const chunk of result.stream) {
           // Be defensive: some SDK builds throw when parsing; extract text from multiple shapes
@@ -190,6 +195,7 @@ app.post("/generate-quiz-stream", async (req, res) => {
               const parts = chunk.candidates[0]?.content?.parts || [];
               delta = parts.map((p) => p?.text || "").join("");
             }
+            fullGeminiResponse += delta;
           } catch (_) {
             // ignore and let delta stay empty
           }
@@ -197,28 +203,37 @@ app.post("/generate-quiz-stream", async (req, res) => {
 
           buffer += String(delta);
 
-          // Flush complete NDJSON lines
-          let nl;
-          while ((nl = buffer.indexOf("\n")) !== -1) {
-            const line = buffer.slice(0, nl).trim();
-            buffer = buffer.slice(nl + 1);
-            if (!line) continue;
-            try {
-              const raw = JSON.parse(line);
-              const norm = normalizeItem(raw);
-              if (norm) {
-                const key = norm.question.toLowerCase();
-                if (!seen.has(key)) {
-                  seen.add(key);
-                  send("item", { item: norm });
-                }
+          // Flush complete NDJSON lines or concatenated JSON objects
+          const jsonObjects = buffer.match(/\{[^{}]*\}/g);
+          if (jsonObjects) {
+            for (const line of jsonObjects) {
+              let clean = line.trim();
+              if (clean.startsWith("```")) {
+                clean = clean.replace(/^```json|^```|```$/g, "").trim();
               }
-            } catch {}
+              try {
+                const raw = JSON.parse(clean);
+                const norm = normalizeItem(raw);
+                if (norm) {
+                  const key = norm.question.toLowerCase();
+                  if (!seen.has(key)) {
+                    seen.add(key);
+                    send("item", { item: norm });
+                  }
+                }
+              } catch (err) {
+                console.warn("⚠️ Failed to parse chunk:", err.message);
+              }
+            }
+            buffer = "";
           }
         }
 
-        // flush tail
-        const last = buffer.trim();
+        // flush tail (no need for newline splitting; handled above)
+        let last = buffer.trim();
+        if (last.startsWith("```")) {
+          last = last.replace(/^```json|^```|```$/g, "").trim();
+        }
         if (last) {
           try {
             const raw = JSON.parse(last);
@@ -232,7 +247,8 @@ app.post("/generate-quiz-stream", async (req, res) => {
             }
           } catch {}
         }
-
+        console.log("⬅️ Full Gemini streamed response:");
+        console.log(fullGeminiResponse);
         send("done", { total: seen.size });
         return res.end();
       } catch (err) {

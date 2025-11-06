@@ -385,7 +385,7 @@ function QuizAppBody() {
       setStatusMsg({
         type: "info",
         key: "generatingWithGemini",
-        args: [slideArr.length],
+        args: [slideArr.length, (slides.name || "").replace(/\.pdf$/i, "")],
       });
       const resp = await fetch(`${API_BASE}/generate-quiz-stream`, {
         method: "POST",
