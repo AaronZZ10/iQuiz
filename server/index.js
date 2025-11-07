@@ -14,6 +14,7 @@ const allowed = [
   "https://iquiz-1.onrender.com",
   "https://aaronzz10.github.io/iQuiz",
   "https://aaronzz10.github.io",
+  "https://iquiz.website",
 ];
 app.use(cors({ origin: allowed }));
 
@@ -184,8 +185,6 @@ app.post("/generate-quiz-stream", async (req, res) => {
         //   promptParts.map((p) => p.text).join("\n\n")
         // );
 
-        
-
         for await (const chunk of result.stream) {
           // Be defensive: some SDK builds throw when parsing; extract text from multiple shapes
           let delta = "";
@@ -195,7 +194,6 @@ app.post("/generate-quiz-stream", async (req, res) => {
               const parts = chunk.candidates[0]?.content?.parts || [];
               delta = parts.map((p) => p?.text || "").join("");
             }
-            
           } catch (_) {
             // ignore and let delta stay empty
           }
@@ -412,7 +410,6 @@ app.post("/generate-quiz", async (req, res) => {
 
       const resp = await gModel.generateContent(promptParts);
       const text = (await resp.response).text();
-      
 
       let json = {};
       try {
