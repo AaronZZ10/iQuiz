@@ -12,7 +12,7 @@ export default function QuizHeader({ busy }) {
       </div>
       <div className="flex items-center gap-2">
         {/* Language selector */}
-        <label className="hidden sm:flex items-center gap-2 text-sm">
+        <label className="flex flex-col sm:flex-row items-center gap-2 text-sm">
           <span className="opacity-70">{t("language")}:</span>
           <select
             className="px-2 py-1 rounded border"
