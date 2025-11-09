@@ -2,16 +2,9 @@
 
 iQuiz is a web-based intelligent quiz generator and reviewer built with React, TailwindCSS, and Node.js.  
 It allows users to upload their study materials (JSON, CSV, or PDF slides) and automatically generate review questions using AI models.  
-The **Express backend uses Google Gemini**, while the **Spring Boot backend uses OpenAI**.
+The **Express backend uses Google Gemini & OpenAI**, while the **Spring Boot backend uses OpenAI**.
 
-**Note:** Render servers automatically sleep after 15 minutes of inactivity. Please use the "Wake Up" link below to activate the backend before generating quizzes.
-
-| Live Demo                                 | Backend     | Model  | Server Health Check                                        |
-| ----------------------------------------- | ----------- | ------ | ---------------------------------------------------------- |
-| [Link](https://iquiz-1.onrender.com)      | Express.js  | Gemini | [Wake Up](https://iquiz-oz01.onrender.com/health)          |
-| [Link](https://iquiz-spring.onrender.com) | Spring Boot | GPT    | [Wake Up](https://iquiz-server-spring.onrender.com/health) |
-
-_Please click "Wake Up" and wait until you receive an "ok" response before using the app._
+🌐 **Live Demo with Express Backend:** [Link](https://iquiz.website)
 
 ## 🚀 Features
 
@@ -31,7 +24,7 @@ _Please click "Wake Up" and wait until you receive an "ok" response before using
 - **Help Window:** Displays usage instructions and tips in an accessible popup.
 - **Multilingual Support:** Switch seamlessly between English and other languages across the entire UI, including buttons, messages, and status banners.
 - **Backend Options:** Supports two backend servers for quiz generation:
-  - **Node.js + Express** server using **Google Gemini API**, deployed on Render.
+  - **Node.js + Express** server using **Google Gemini API & OpenAI API\***, deployed on Render.
   - **Spring Boot (Java)** server using **OpenAI API**, deployed on Render.
 - Users can switch between these backend servers for generating quizzes.
 
@@ -39,7 +32,7 @@ _Please click "Wake Up" and wait until you receive an "ok" response before using
 
 - **Frontend:** React, TailwindCSS
 - **Backend:** Node.js + Express with Google Gemini API **and** Spring Boot (Java) with OpenAI API on Render
-- **AI Integration:** Google Gemini API (Express) and OpenAI API (Spring Boot)
+- **AI Integration:** Google Gemini API & OpenAI API (Express) and OpenAI API (Spring Boot)
 - **PDF Parsing:** pdf.js
 - **Deployment:** Render
 
