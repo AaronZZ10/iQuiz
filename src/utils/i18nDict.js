@@ -5,7 +5,7 @@ const DICT = {
     noQuestions: "No questions loaded.",
     loadDemoQuiz: "Loaded demo quiz with 30 questions.",
     generatingWithGemini: (n, name) =>
-      `Found ${n} slides in ${name}. Generating quiz questions with Gemini…`,
+      `Found ${n} slides in ${name}. Generating quiz questions with LLM…`,
     appTitle: "iQuiz",
     tagline:
       "A smart, lightweight web app for reviewing study materials and generating quizzes",
@@ -58,7 +58,7 @@ const DICT = {
     noQuestions: "尚未加载题目。",
     loadDemoQuiz: "加载了包含 30 个问题的演示测验。",
     generatingWithGemini: (n, name) =>
-      `在${name}中共检测到 ${n} 张幻灯片，正在用 Gemini 生成测验题目…`,
+      `在${name}中共检测到 ${n} 张幻灯片，正在用 LLM 生成测验题目…`,
     appTitle: "iQuiz",
     tagline: "用于复习与生成测验题目的轻量智能网页应用",
     help: "帮助",
@@ -106,7 +106,7 @@ const DICT = {
     noQuestions: "No se han cargado preguntas.",
     loadDemoQuiz: "Cuestionario de demostración cargado con 30 preguntas.",
     generatingWithGemini: (n, name) =>
-      `Se encontraron ${n} diapositivas en ${name}. Generando preguntas con Gemini…`,
+      `Se encontraron ${n} diapositivas en ${name}. Generando preguntas con LLM…`,
     appTitle: "iQuiz",
     tagline:
       "Una aplicación web inteligente y ligera para repasar materiales y generar cuestionarios",
@@ -160,7 +160,7 @@ const DICT = {
     noQuestions: "لم يتم تحميل أي أسئلة.",
     loadDemoQuiz: "تم تحميل اختبار تجريبي يحتوي على 30 سؤالًا.",
     generatingWithGemini: (n, name) =>
-      `تم العثور على ${n} شريحة في ${name}. جارٍ إنشاء الأسئلة باستخدام Gemini…`,
+      `تم العثور على ${n} شريحة في ${name}. جارٍ إنشاء الأسئلة باستخدام LLM…`,
     appTitle: "آي كويز",
     tagline: "تطبيق ويب ذكي وخفيف للمراجعة وإنشاء الاختبارات",
     help: "مساعدة",
@@ -210,7 +210,7 @@ const DICT = {
     noQuestions: "Aucune question chargée.",
     loadDemoQuiz: "Quiz de démonstration chargé avec 30 questions.",
     generatingWithGemini: (n, name) =>
-      `Trouvé ${n} diapositives dans ${name}. Génération de questions avec Gemini…`,
+      `Trouvé ${n} diapositives dans ${name}. Génération de questions avec LLM…`,
     appTitle: "iQuiz",
     tagline:
       "Une application web intelligente et légère pour réviser et générer des quiz",
@@ -264,7 +264,7 @@ const DICT = {
     noQuestions: "質問が読み込まれていません。",
     loadDemoQuiz: "デモクイズ（30問）を読み込みました。",
     generatingWithGemini: (n, name) =>
-      `${name} で ${n} 枚のスライドが見つかりました。Geminiでクイズ問題を生成しています…`,
+      `${name} で ${n} 枚のスライドが見つかりました。LLMでクイズ問題を生成しています…`,
     appTitle: "iQuiz",
     tagline:
       "学習資料を復習し、クイズを生成するためのスマートで軽量なWebアプリ",
@@ -317,7 +317,7 @@ const DICT = {
     noQuestions: "Keine Fragen geladen.",
     loadDemoQuiz: "Demo-Quiz mit 30 Fragen geladen.",
     generatingWithGemini: (n, name) =>
-      `${n} Folien in ${name} gefunden. Erzeuge Quizfragen mit Gemini…`,
+      `${n} Folien in ${name} gefunden. Erzeuge Quizfragen mit LLM…`,
     appTitle: "iQuiz",
     tagline:
       "Eine intelligente, leichte Web-App zum Wiederholen und Erstellen von Quizfragen",
@@ -369,7 +369,7 @@ const DICT = {
     noQuestions: "불러온 문제가 없습니다.",
     loadDemoQuiz: "30개의 문제로 구성된 데모 퀴즈를 불러왔습니다.",
     generatingWithGemini: (n, name) =>
-      `${name}에서 ${n}개의 슬라이드를 발견했습니다. Gemini로 퀴즈 문제를 생성 중…`,
+      `${name}에서 ${n}개의 슬라이드를 발견했습니다. LLM로 퀴즈 문제를 생성 중…`,
     appTitle: "iQuiz",
     tagline: "학습 자료 복습과 퀴즈 생성을 위한 스마트하고 가벼운 웹 앱",
     help: "도움말",
@@ -419,7 +419,7 @@ const DICT = {
     noQuestions: "कोई प्रश्न लोड नहीं किया गया है।",
     loadDemoQuiz: "30 प्रश्नों वाला डेमो क्विज़ लोड किया गया।",
     generatingWithGemini: (n, name) =>
-      `${name} में ${n} स्लाइडें मिलीं। Gemini के साथ क्विज़ प्रश्न बना रहा है…`,
+      `${name} में ${n} स्लाइडें मिलीं। LLM के साथ क्विज़ प्रश्न बना रहा है…`,
     appTitle: "iQuiz",
     tagline:
       "अध्ययन सामग्री की समीक्षा और क्विज़ बनाने के लिए एक स्मार्ट, हल्का वेब ऐप",
@@ -473,7 +473,7 @@ const DICT = {
     noQuestions: "Вопросы не загружены.",
     loadDemoQuiz: "Загружена демонстрационная викторина с 30 вопросами.",
     generatingWithGemini: (n, name) =>
-      `В файле ${name} найдено ${n} слайдов. Генерация вопросов с помощью Gemini…`,
+      `В файле ${name} найдено ${n} слайдов. Генерация вопросов с помощью LLM…`,
     appTitle: "iQuiz",
     tagline:
       "Умное и лёгкое веб-приложение для повторения материала и создания викторин",
@@ -525,7 +525,7 @@ const DICT = {
     noQuestions: "Nenhuma pergunta carregada.",
     loadDemoQuiz: "Questionário de demonstração carregado com 30 perguntas.",
     generatingWithGemini: (n, name) =>
-      `${n} slides encontrados em ${name}. Gerando perguntas com o Gemini…`,
+      `${n} slides encontrados em ${name}. Gerando perguntas com o LLM…`,
     appTitle: "iQuiz",
     tagline:
       "Um aplicativo web inteligente e leve para revisar materiais e gerar questionários",
@@ -579,7 +579,7 @@ const DICT = {
     noQuestions: "Nessuna domanda caricata.",
     loadDemoQuiz: "Quiz dimostrativo caricato con 30 domande.",
     generatingWithGemini: (n, name) =>
-      `Trovate ${n} diapositive in ${name}. Generazione delle domande del quiz con Gemini…`,
+      `Trovate ${n} diapositive in ${name}. Generazione delle domande del quiz con LLM…`,
     appTitle: "iQuiz",
     tagline:
       "Un'app web intelligente e leggera per rivedere materiali e generare quiz",
