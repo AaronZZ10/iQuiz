@@ -66,7 +66,7 @@ export default function QuizHeader({ busy }) {
                 <ul className="list-disc list-inside space-y-1">
                   <li>
                     <strong>Upload PDF slides</strong> to auto-generate
-                    questions with OpenAI.
+                    questions with LLM.
                   </li>
                   <li>
                     Import questions via <strong>JSON</strong>.
